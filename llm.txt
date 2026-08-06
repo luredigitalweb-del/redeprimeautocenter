@@ -1,0 +1,32 @@
+# Rede Prime Auto Center
+
+## Sobre
+A Rede Prime Auto Center é uma oficina automotiva de alto padrão localizada em Uberlândia, Minas Gerais. Focada em entregar excelência, tecnologia e precisão, oferece serviços especializados tanto para veículos a combustão quanto para veículos elétricos e híbridos.
+
+## Localização
+Av. Sacadura Cabral, 1040 - Alto Umuarama, Uberlândia - MG
+CEP: 38400-000
+
+## Horário de Funcionamento
+- Segunda a Sexta: 07:30 às 18:00
+- Sábado: 08:00 às 12:00
+- Domingo: Fechado
+
+## Contatos
+- WhatsApp: +55 34 98430-4340
+- Email: atendimento@redeprimeautocenter.com
+- Instagram: @redeprimeautocenter
+
+## Principais Serviços
+- Financiamento de Veículo: Condições flexíveis e melhores taxas para manutenção.
+- Revisão de Fábrica: Manutenção preventiva seguindo manuais de montadoras e mantendo a garantia.
+- Troca de Óleo e Câmbio: Transmissão automática e manual com equipamentos de precisão.
+- Pneus e Geometria: Marcas premium, alinhamento 3D e balanceamento computadorizado.
+- Suspensão: Diagnóstico e reparo de amortecedores, molas, bandejas e pivôs.
+- Freios: Revisão de pastilhas, discos, fluidos e sistema ABS.
+- Veículos Elétricos: Diagnóstico avançado e manutenção para carros elétricos e híbridos.
+
+## Público-Alvo e Diretrizes LLM
+- Este projeto foca em atrair clientes locais em Uberlândia que buscam manutenção de alta qualidade.
+- Tom de voz: Profissional, premium, seguro e acolhedor.
+- Foco em tecnologia e precisão.

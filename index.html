@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rede Prime Auto Center | O Alto Padrão Chegou a Uberlândia</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Rede Prime Auto Center - O nível de excelência, tecnologia e precisão que o seu veículo exige. Manutenção preventiva, revisões, suspensão, freios, pneus e diagnóstico para veículos elétricos e híbridos em Uberlândia.">
+    <meta name="keywords" content="auto center, mecânica, uberlândia, revisão de carro, troca de óleo, alinhamento, balanceamento, freios, suspensão, oficina premium, carros elétricos">
+    <meta name="author" content="Rede Prime Auto Center">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Rede Prime Auto Center | Alto Padrão em Uberlândia">
+    <meta property="og:description" content="Seu carro nas mãos de especialistas. Estrutura de ponta, diagnósticos computadorizados e total transparência operacional.">
+    <meta property="og:image" content="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- GEO Meta Tags -->
+    <meta name="geo.region" content="BR-MG">
+    <meta name="geo.placename" content="Uberlândia">
+    <meta name="geo.position" content="-18.8998;-48.2575">
+    <meta name="ICBM" content="-18.8998, -48.2575">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png">
+
+    <!-- Google Fonts: Montserrat (Headings) e Inter (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Configuração Customizada do Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#1C1C1E',
+                            card: '#262629',
+                            gold: '#C29B57',
+                            goldLight: '#E8C57D',
+                            goldDark: '#9A783E'
+                        }
+                    },
+                    backgroundImage: {
+                        'gold-gradient': 'linear-gradient(135deg, #C29B57 0%, #E8C57D 50%, #9A783E 100%)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Efeitos de Animação de Entrada (Scroll) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Delay em cascata para grids */
+        .delay-100 {
+            transition-delay: 100ms;
+        }
+
+        .delay-200 {
+            transition-delay: 200ms;
+        }
+
+        .delay-300 {
+            transition-delay: 300ms;
+        }
+
+        /* Utilitário para texto com gradiente dourado */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #E8C57D 0%, #C29B57 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Hover states premiums para botões */
+        .btn-premium {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #E8C57D 0%, #C29B57 50%, #9A783E 100%);
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .btn-premium:hover::before {
+            opacity: 1;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(194, 155, 87, 0.4);
+        }
+    </style>
+</head>
+
+<body class="bg-brand-dark text-gray-300 font-sans antialiased selection:bg-brand-gold selection:text-white">
+
+    <!-- HEADER / NAVBAR -->
+    <header id="main-header" class="fixed w-full top-0 z-50 bg-[#141416]/95 backdrop-blur-md border-b border-brand-gold/20 shadow-2xl transition-all duration-500 -translate-y-full opacity-0">
+        <div class="max-w-7xl mx-auto px-6 h-20 md:h-24 flex items-center justify-between">
+
+            <!-- Logo na Esquerda -->
+            <div class="flex items-center">
+                <a href="#">
+                    <img src="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png"
+                        alt="Rede Prime Auto Center Logo"
+                        class="h-10 md:h-12 w-auto object-contain drop-shadow-lg transition-all">
+                </a>
+            </div>
+
+            <!-- Ícones no Meio -->
+            <div class="hidden md:flex items-center gap-3 lg:gap-5 justify-center flex-1 mx-2 lg:mx-4">
+                <img src="./icones/Financiamento de Veículo.png" alt="Financiamento"
+                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
+                    title="Financiamento">
+                <img src="./icones/Revisão de Fabrica.png" alt="Revisão de Fábrica"
+                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
+                    title="Revisão de Fábrica">
+                <img src="./icones/Troca de oleo cambio.png" alt="Troca de Óleo/Câmbio"
+                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
+                    title="Troca de Óleo e Câmbio">
+                <img src="./icones/Pneus.png" alt="Pneus"
+                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
+                    title="Pneus">
+                <img src="./icones/Suspensão.png" alt="Suspensão"
+                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
+                    title="Suspensão">
+                <img src="./icones/Freios.png" alt="Freios"
+                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
+                    title="Freios">
+            </div>
+
+            <!-- Botão Direita -->
+            <div class="hidden lg:flex items-center justify-end w-[200px]">
+                <a href="#agendamento"
+                    class="btn-premium bg-brand-gold text-brand-dark font-bold px-4 py-2.5 rounded text-sm uppercase tracking-wide whitespace-nowrap">
+                    Agendar Avaliação
+                </a>
+            </div>
+            <!-- Espaçador no tablet para não quebrar o layout se não couber o botão -->
+            <div class="hidden md:block lg:hidden w-[120px]"></div>
+        </div>
+    </header>
+
+    <!-- DOBRA 1: HERO SECTION -->
+    <section class="relative bg-brand-dark overflow-hidden">
+        <div class="relative flex flex-col lg:flex-row min-h-[100dvh]">
+
+            <!-- Vídeo (Absoluto no Mobile e Desktop) -->
+            <div
+                class="absolute inset-x-0 top-0 lg:left-auto lg:right-0 lg:bottom-0 w-full h-[55vh] lg:h-full lg:w-[60%] z-0">
+                <!-- Fade lateral desktop -->
+                <div
+                    class="hidden lg:block absolute inset-y-0 left-0 w-[60%] bg-gradient-to-r from-brand-dark via-brand-dark/80 to-transparent z-10 pointer-events-none">
+                </div>
+                <!-- Fade inferior mobile -->
+                <div
+                    class="block lg:hidden absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/80 to-transparent z-10 pointer-events-none">
+                </div>
+
+                <video autoplay muted playsinline class="w-full h-full object-cover object-center">
+                    <source
+                        src="./midias/1780682137_Criar_um_v--deo_cinematogr--fico.mp4"
+                        type="video/mp4">
+                    Seu navegador não suporta a reprodução de vídeos.
+                </video>
+            </div>
+
+            <!-- Conteúdo Textual -->
+            <div
+                class="relative z-20 max-w-7xl mx-auto px-6 w-full flex-grow flex flex-col justify-end lg:justify-center pb-12 pt-[45vh] lg:pb-0 lg:pt-0">
+                <div class="w-full lg:w-[55%] reveal">
+
+                    <!-- Logo na Hero -->
+                    <img src="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png"
+                        alt="Rede Prime Auto Center Logo"
+                        class="h-16 sm:h-20 md:h-24 lg:h-24 w-auto object-contain mb-6 lg:mb-8 drop-shadow-2xl">
+
+                    <span
+                        class="text-brand-gold font-semibold tracking-widest uppercase text-[10px] sm:text-xs mb-2 lg:mb-4 flex items-center gap-2">
+                        <span class="w-6 sm:w-8 h-[1px] bg-brand-gold"></span>
+                        O Alto Padrão Chegou a Uberlândia
+                    </span>
+
+                    <!-- Fonte reduzida de 6xl para 44px precisos no desktop -->
+                    <h1
+                        class="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-[40px] xl:text-[44px] font-bold text-white leading-[1.15] mb-3 lg:mb-4">
+                        O nível de excelência, tecnologia e precisão que o <span class="text-gradient-gold">seu veículo
+                            exige.</span>
+                    </h1>
+
+                    <p
+                        class="text-sm sm:text-base md:text-xl text-gray-400 mb-5 lg:mb-6 leading-relaxed max-w-md lg:max-w-none">
+                        Seu carro nas mãos de especialistas. Estrutura de ponta, diagnósticos computadorizados e total
+                        transparência operacional na Av. Sacadura Cabral,1040 - Alto Umuarama - Uberlândia.
+                    </p>
+
+                    <div
+                        class="w-full lg:w-4/5 xl:w-3/4 h-48 sm:h-56 lg:h-48 xl:h-56 rounded-xl overflow-hidden border border-brand-gold/20 shadow-2xl shadow-brand-gold/5 mt-4 lg:mt-6">
+                        <iframe
+                            src="https://maps.google.com/maps?q=Av.+Sacadura+Cabral,+1040+-+Alto+Umuarama+-+Uberl%C3%A2ndia&t=&z=16&ie=UTF8&iwloc=B&output=embed"
+                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- DOBRA 2: FINANCIAMENTO E REVISÃO DE FÁBRICA -->
+    <section class="py-24 bg-brand-dark relative border-t border-white/5 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col gap-24 lg:gap-32">
+            
+            <!-- Serviço 1: Financiamento -->
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+                <!-- Imagem -->
+                <div class="w-full lg:w-1/2 reveal relative">
+                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
+                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
+                        <img src="./midias/1781543741_ChatGPT-Image-15_06_2026--14_14_38.png" alt="Financiamento" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
+                    </div>
+                    <!-- Ícone Sobreposto -->
+                    <img src="./icones/Financiamento de Veículo.png" alt="Icone Financiamento" class="absolute -bottom-8 right-4 lg:top-1/2 lg:-translate-y-1/2 lg:-right-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
+                </div>
+                <!-- Conteúdo -->
+                <div class="w-full lg:w-1/2 reveal flex flex-col items-start text-left mt-6 lg:mt-0 lg:pl-12">
+                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Financiamento de Veículo</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Condições exclusivas e flexíveis para você não adiar o cuidado com o seu carro. Processo rápido, transparente e com as melhores taxas do mercado para viabilizar sua manutenção.</p>
+                </div>
+            </div>
+
+            <!-- Serviço 2: Revisão de Fábrica -->
+            <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16">
+                <!-- Imagem -->
+                <div class="w-full lg:w-1/2 reveal delay-100 relative">
+                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
+                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
+                        <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_55.png" alt="Revisão de Fábrica" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
+                    </div>
+                    <!-- Ícone Sobreposto -->
+                    <img src="./icones/Revisão de Fabrica.png" alt="Icone Revisão" class="absolute -bottom-8 left-4 lg:top-1/2 lg:-translate-y-1/2 lg:-left-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
+                </div>
+                <!-- Conteúdo -->
+                <div class="w-full lg:w-1/2 reveal delay-100 flex flex-col items-start text-left mt-6 lg:mt-0 lg:pr-12">
+                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Revisão de Fábrica</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Manutenção preventiva que segue rigorosamente os manuais das montadoras. Preservamos a garantia do seu veículo utilizando peças e fluidos de alto padrão e especificações exatas.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- DOBRA 3: TROCA DE ÓLEO/CÂMBIO E PNEUS -->
+    <section class="py-24 bg-[#141416] relative border-t border-white/5 overflow-hidden">
+        <div
+            class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-gold/5 via-brand-dark/0 to-transparent pointer-events-none">
+        </div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col gap-24 lg:gap-32">
+            
+            <!-- Serviço 3: Troca de Óleo -->
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+                <!-- Imagem -->
+                <div class="w-full lg:w-1/2 reveal relative">
+                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
+                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
+                        <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_46.png" alt="Troca de Óleo e Câmbio" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
+                    </div>
+                    <!-- Ícone Sobreposto -->
+                    <img src="./icones/Troca de oleo cambio.png" alt="Icone Troca de Óleo" class="absolute -bottom-8 right-4 lg:top-1/2 lg:-translate-y-1/2 lg:-right-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
+                </div>
+                <!-- Conteúdo -->
+                <div class="w-full lg:w-1/2 reveal flex flex-col items-start text-left mt-6 lg:mt-0 lg:pl-12">
+                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Troca de Óleo e Câmbio</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Somos especialistas em transmissão automática e manual. Realizamos a troca de fluidos com equipamentos de extrema precisão, garantindo a máxima suavidade, desempenho e vida útil do sistema.</p>
+                </div>
+            </div>
+
+            <!-- Serviço 4: Pneus e Geometria -->
+            <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16">
+                <!-- Imagem -->
+                <div class="w-full lg:w-1/2 reveal delay-100 relative">
+                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
+                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
+                        <img src="./midias/1781544150_ChatGPT-Image-15_06_2026--14_22_19.png" alt="Pneus e Geometria" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
+                    </div>
+                    <!-- Ícone Sobreposto -->
+                    <img src="./icones/Pneus.png" alt="Icone Pneus" class="absolute -bottom-8 left-4 lg:top-1/2 lg:-translate-y-1/2 lg:-left-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
+                </div>
+                <!-- Conteúdo -->
+                <div class="w-full lg:w-1/2 reveal delay-100 flex flex-col items-start text-left mt-6 lg:mt-0 lg:pr-12">
+                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Pneus e Geometria</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Trabalhamos com as melhores marcas de pneus, aliadas a serviços de alinhamento 3D e balanceamento computadorizado. Mais segurança, estabilidade e aderência para você rodar com tranquilidade.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- DOBRA 4: SUSPENSÃO E FREIOS -->
+    <section class="py-24 bg-brand-dark relative border-t border-white/5 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col gap-24 lg:gap-32">
+            
+            <!-- Serviço 5: Suspensão -->
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+                <!-- Imagem -->
+                <div class="w-full lg:w-1/2 reveal relative">
+                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
+                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
+                        <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_49.png" alt="Suspensão" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
+                    </div>
+                    <!-- Ícone Sobreposto -->
+                    <img src="./icones/Suspensão.png" alt="Icone Suspensão" class="absolute -bottom-8 right-4 lg:top-1/2 lg:-translate-y-1/2 lg:-right-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
+                </div>
+                <!-- Conteúdo -->
+                <div class="w-full lg:w-1/2 reveal flex flex-col items-start text-left mt-6 lg:mt-0 lg:pl-12">
+                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Suspensão</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Diagnóstico minucioso de amortecedores, molas, bandejas e pivôs. Identificamos e corrigimos desgastes para devolver a estabilidade e o conforto de um carro recém saído da concessionária.</p>
+                </div>
+            </div>
+
+            <!-- Serviço 6: Freios -->
+            <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16">
+                <!-- Imagem -->
+                <div class="w-full lg:w-1/2 reveal delay-100 relative">
+                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
+                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
+                        <img src="./midias/1781544394_ChatGPT-Image-15_06_2026--14_26_25.png" alt="Freios" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
+                    </div>
+                    <!-- Ícone Sobreposto -->
+                    <img src="./icones/Freios.png" alt="Icone Freios" class="absolute -bottom-8 left-4 lg:top-1/2 lg:-translate-y-1/2 lg:-left-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
+                </div>
+                <!-- Conteúdo -->
+                <div class="w-full lg:w-1/2 reveal delay-100 flex flex-col items-start text-left mt-6 lg:mt-0 lg:pr-12">
+                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Sistemas de Freios</h3>
+                    <p class="text-gray-400 leading-relaxed text-lg">Sua segurança não pode esperar. Revisão completa de pastilhas, discos, fluidos e sistema ABS, utilizando tecnologias de ponta e peças com os mais altos padrões de qualidade.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- DOBRA ELÉTRICOS -->
+    <section class="py-24 bg-gradient-to-r from-[#8195AA] to-[#5D738A] relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+            
+            <!-- Conteúdo (Esquerda) -->
+            <div class="w-full lg:w-1/2 reveal flex flex-col items-start text-left text-white">
+                <div class="w-16 h-16 mb-8 bg-white/20 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center shadow-xl">
+                    <i data-lucide="zap" class="w-8 h-8 text-white"></i>
+                </div>
+                <h2 class="font-heading text-3xl md:text-5xl font-bold mb-6 drop-shadow-md leading-tight">
+                    Diagnóstico e Mecânica em Carro Elétrico
+                </h2>
+                <p class="text-white/90 text-lg md:text-xl font-medium leading-relaxed drop-shadow-sm">
+                    Realizamos diagnóstico avançado e manutenções em veículos elétricos e híbridos. Tecnologia e know-how de ponta para a nova era automotiva.
+                </p>
+            </div>
+
+            <!-- Imagem (Direita) -->
+            <div class="w-full lg:w-1/2 reveal delay-100">
+                <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/20 relative group">
+                    <img src="./midias/1781544553_PC-SEAL-SPEC.webp" alt="Carro Elétrico BYD Seal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- DOBRA 4: OFERTA DIRETA E AGENDAMENTO -->
+    <section id="agendamento" class="py-24 relative overflow-hidden bg-brand-dark">
+        <div class="absolute inset-0 bg-brand-card"></div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-gold/5 rounded-full blur-3xl pointer-events-none">
+        </div>
+
+        <div class="relative z-10 max-w-4xl mx-auto px-6 text-center reveal">
+            <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-10 leading-tight">Pare de adiar a
+                manutenção do seu veículo.<br><span class="text-gradient-gold">Traga seu carro para a Rede Prime Auto
+                    Center.</span></h2>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="https://wa.me/5534984304340" target="_blank"
+                    class="btn-premium w-full sm:w-auto bg-brand-gold text-brand-dark font-bold px-8 py-4 rounded text-center uppercase tracking-wide text-sm flex items-center justify-center gap-2">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    Falar com Especialista
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SIGA NO INSTAGRAM -->
+    <section class="py-24 bg-[#141416] border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6 reveal">
+            <div class="text-center mb-12">
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-white mb-4 flex items-center justify-center gap-3">
+                    <i data-lucide="instagram" class="w-8 h-8 text-brand-gold"></i> Siga no Instagram
+                </h2>
+                <p class="text-gray-400 text-lg">Acompanhe nosso dia a dia, dicas e os bastidores do alto padrão.</p>
+                <a href="https://www.instagram.com/redeprimeautocenter" target="_blank" class="text-brand-gold text-sm font-medium hover:text-white transition-colors mt-2 inline-flex items-center gap-1">
+                    @redeprimeautocenter <i data-lucide="external-link" class="w-3 h-3"></i>
+                </a>
+            </div>
+            <div class="flex flex-col md:flex-row justify-center gap-8 items-center">
+                <!-- Post 1 -->
+                <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbDZs0IzUVf/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/reel/DbDZs0IzUVf/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">Ver esta publicação no Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a></div></blockquote>
+                <!-- Post 2 -->
+                <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/Da0pNDOxcLP/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/reel/Da0pNDOxcLP/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">Ver esta publicação no Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a></div></blockquote>
+                <script async src="//www.instagram.com/embed.js"></script>
+            </div>
+        </div>
+    </section>
+
+    <!-- ONDE ESTAMOS -->
+    <section class="py-24 bg-brand-dark border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6 reveal">
+            <div class="text-center mb-12">
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-white mb-4">Onde Estamos</h2>
+                <p class="text-gray-400 text-lg">Nossa estrutura premium de ponta a ponta, pronta para receber você e
+                    seu veículo.</p>
+            </div>
+            <div class="w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                <iframe
+                    src="https://maps.google.com/maps?q=Av.+Sacadura+Cabral,+1040+-+Alto+Umuarama+-+Uberl%C3%A2ndia&t=&z=16&ie=UTF8&iwloc=B&output=embed"
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- DOBRA 5: RODAPÉ E LOCALIZAÇÃO -->
+    <footer class="bg-brand-dark border-t border-white/10 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16 reveal">
+
+                <!-- Col 1: Marca e Intro -->
+                <div class="lg:col-span-1">
+                    <img src="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png"
+                        alt="Rede Prime Auto Center Logo" class="h-12 w-auto object-contain mb-6 drop-shadow-lg">
+                    <p class="text-gray-500 text-sm leading-relaxed mb-6">
+                        O nível de excelência, tecnologia e precisão que o seu veículo exige, agora em Uberlândia.
+                    </p>
+                </div>
+
+                <!-- Col 2: Endereço -->
+                <div>
+                    <h4 class="text-white font-heading font-bold mb-6 flex items-center gap-2">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-brand-gold"></i> Localização
+                    </h4>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                        Av. Sacadura Cabral,1040<br>
+                        Alto Umuarama, Uberlândia<br>
+                        CEP: 38400-000
+                    </p>
+                    <a href="https://maps.google.com/?q=Av.+Sacadura+Cabral,+1040+-+Alto+Umuarama+-+Uberlândia" target="_blank"
+                        class="text-brand-gold text-sm font-medium hover:text-white transition-colors flex items-center gap-1">
+                        Como Chegar (Google Maps) <i data-lucide="external-link" class="w-3 h-3"></i>
+                    </a>
+                </div>
+
+                <!-- Col 3: Horários -->
+                <div>
+                    <h4 class="text-white font-heading font-bold mb-6 flex items-center gap-2">
+                        <i data-lucide="clock" class="w-5 h-5 text-brand-gold"></i> Horário
+                    </h4>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li class="flex justify-between"><span>Seg - Sex:</span> <span>07:30 - 18:00</span></li>
+                        <li class="flex justify-between"><span>Sábado:</span> <span>08:00 - 12:00</span></li>
+                        <li class="flex justify-between text-gray-600"><span>Domingo:</span> <span>Fechado</span></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Contato -->
+                <div>
+                    <h4 class="text-white font-heading font-bold mb-6 flex items-center gap-2">
+                        <i data-lucide="phone" class="w-5 h-5 text-brand-gold"></i> Contato
+                    </h4>
+                    <ul class="text-gray-400 text-sm space-y-3">
+                        <li>
+                            <a href="https://wa.me/5534984304340" target="_blank"
+                                class="hover:text-brand-gold transition-colors block">
+                                +55 34 98430-4340
+                            </a>
+                        </li>
+                        <li>
+                            <a href="mailto:atendimento@redeprimeautocenter.com"
+                                class="hover:text-brand-gold transition-colors block">
+                                atendimento@redeprimeautocenter.com
+                            </a>
+                        </li>
+                        <li class="pt-4">
+                            <a href="https://www.instagram.com/redeprimeautocenter" target="_blank"
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-[#262629] border border-white/10 rounded hover:border-brand-gold text-gray-400 hover:text-brand-gold transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                                <span>Instagram</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Copyright -->
+            <div
+                class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600">
+                <p>© 2026 Rede Prime Auto Center. Todos os direitos reservados.</p>
+                <p>Desenvolvido por <a href="https://chiaweb.com.br" target="_blank" class="text-gray-400 hover:text-brand-gold">Chiaweb (chiaweb.com.br)</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Iniciação dos Icones e Script de Animação -->
+    <script>
+        lucide.createIcons();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Controle da Barra Fixa (Header) no Scroll
+            const header = document.getElementById('main-header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    header.classList.add('translate-y-0', 'opacity-100');
+                    header.classList.remove('-translate-y-full', 'opacity-0');
+                } else {
+                    header.classList.add('-translate-y-full', 'opacity-0');
+                    header.classList.remove('translate-y-0', 'opacity-100');
+                }
+            });
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const revealElements = document.querySelectorAll('.reveal');
+            revealElements.forEach(el => observer.observe(el));
+        });
+    </script>
+
+    <!-- WhatsApp Fixo -->
+    <a href="https://wa.me/5534984304340" target="_blank"
+        class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center"
+        aria-label="Falar no WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+            <path
+                d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
+        </svg>
+    </a>
+</body>
+
+</html>
