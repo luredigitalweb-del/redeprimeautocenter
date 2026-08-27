@@ -93,132 +93,1184 @@
             transition-delay: 300ms;
         }
 
-        /* Utilitário para texto com gradiente dourado */
+        /* Utilitário para texto com gradiente dourado + brilho (shiny) percorrendo */
         .text-gradient-gold {
-            background: linear-gradient(135deg, #E8C57D 0%, #C29B57 100%);
+            background: linear-gradient(100deg,
+                    #C29B57 0%,
+                    #E8C57D 20%,
+                    #FFF4DC 32%,
+                    #E8C57D 44%,
+                    #C29B57 60%,
+                    #C29B57 100%);
+            background-size: 250% 100%;
+            background-position: 150% center;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            color: transparent;
+            animation: text-shine 6s linear infinite;
         }
 
-        /* Hover states premiums para botões */
+        @keyframes text-shine {
+            0% {
+                background-position: 150% center;
+            }
+
+            /* pausa entre as passagens do brilho */
+            60%,
+            100% {
+                background-position: -50% center;
+            }
+        }
+
+        /* Hover states premiums para botões.
+           O gradiente do hover vive no background do próprio elemento (e não
+           mais num ::before) para liberar o pseudo para o anel de LED. */
         .btn-premium {
-            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             z-index: 1;
-        }
-
-        .btn-premium::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #E8C57D 0%, #C29B57 50%, #9A783E 100%);
-            z-index: -1;
-            transition: opacity 0.3s ease;
-            opacity: 0;
-        }
-
-        .btn-premium:hover::before {
-            opacity: 1;
+            background-image: linear-gradient(135deg, #9A783E 0%, #C29B57 50%, #E8C57D 100%);
+            background-size: 220% 100%;
+            background-position: 0 0;
+            transition: background-position 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .btn-premium:hover {
+            background-position: 100% 0;
             transform: translateY(-2px);
             box-shadow: 0 10px 20px -10px rgba(194, 155, 87, 0.4);
         }
+
+        /* Efeito shimmer (faixa de luz percorrendo o botão) */
+        /* :where() zera a especificidade do position, para não sobrepor
+           utilitários do Tailwind (ex.: .fixed no botão do WhatsApp) */
+        :where(.shimmer) {
+            position: relative;
+        }
+
+        .shimmer {
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .btn-premium::after,
+        .shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            bottom: -50%;
+            left: 0;
+            width: 45%;
+            background: linear-gradient(100deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.45) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            transform: translateX(-160%) skewX(-20deg);
+            pointer-events: none;
+            z-index: 2;
+            animation: btn-shimmer 4.5s ease-in-out infinite;
+        }
+
+        @keyframes btn-shimmer {
+            0% {
+                transform: translateX(-160%) skewX(-20deg);
+            }
+
+            /* pausa entre as passagens da luz */
+            45%,
+            100% {
+                transform: translateX(360%) skewX(-20deg);
+            }
+        }
+
+        .btn-premium:hover::after,
+        .shimmer:hover::after {
+            animation-duration: 1.6s;
+        }
+
+        /* LED que percorre a borda dos botões.
+           O truque: um conic-gradient girando atrás do botão, recortado por
+           uma máscara em anel (a máscara mostra só a faixa entre a borda e o
+           padding, escondendo o miolo). O @property permite animar o ângulo. */
+        @property --led-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        /* Mesma paleta da divisória LED das seções, para o site falar uma
+           língua só: filamento dourado com núcleo quente quase branco. */
+        .led-ring {
+            position: relative;
+            --led-soft: rgba(194, 155, 87, 0.25);
+            --led-mid: #E8C57D;
+            --led-core: #FFF6E2;
+        }
+
+        .led-ring::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            box-sizing: border-box;
+            border-radius: inherit;
+            padding: 2px;
+            /* o arco claro ocupa ~70° do círculo: lê como uma luz correndo,
+               não como um anel inteiro colorido */
+            background: conic-gradient(from var(--led-angle),
+                    transparent 0deg 290deg,
+                    var(--led-soft) 300deg,
+                    var(--led-mid) 330deg,
+                    var(--led-core) 344deg,
+                    var(--led-mid) 352deg,
+                    transparent 360deg);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 3;
+            animation: led-spin 3.5s linear infinite;
+        }
+
+        .led-ring:hover::before {
+            animation-duration: 1.4s;
+        }
+
+        @keyframes led-spin {
+            to {
+                --led-angle: 360deg;
+            }
+        }
+
+        /* Divisória LED entre as seções
+           - a linha base é um filamento dourado que "respira"
+           - ::before é o halo desfocado (o brilho vazando)
+           - ::after é o pulso de luz que percorre a linha
+           Use style="--led-delay: -2s" para dessincronizar cada divisória. */
+        .led-divider {
+            --led-delay: 0s;
+            position: relative;
+            height: 1px;
+            width: 100%;
+            /* clip só no eixo X: impede o pulso de gerar scroll horizontal
+               nas pontas, sem cortar o halo que vaza para cima e para baixo */
+            overflow-x: clip;
+            overflow-y: visible;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(194, 155, 87, 0.10) 12%,
+                    rgba(232, 197, 125, 0.45) 50%,
+                    rgba(194, 155, 87, 0.10) 88%,
+                    transparent 100%);
+            animation: led-breathe 5s ease-in-out infinite;
+            animation-delay: var(--led-delay);
+        }
+
+        .led-divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -2px;
+            height: 5px;
+            background: inherit;
+            filter: blur(5px);
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .led-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 120px;
+            height: 2px;
+            margin-top: -1px;
+            margin-left: -60px;
+            border-radius: 999px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    #E8C57D 35%,
+                    #FFF6E2 50%,
+                    #E8C57D 65%,
+                    transparent 100%);
+            box-shadow: 0 0 14px 2px rgba(232, 197, 125, 0.55),
+                0 0 40px 6px rgba(194, 155, 87, 0.25);
+            pointer-events: none;
+            will-change: left, opacity;
+            animation: led-run 7s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+            animation-delay: var(--led-delay);
+        }
+
+        @keyframes led-run {
+            0% {
+                left: 0%;
+                opacity: 0;
+            }
+
+            12% {
+                opacity: 1;
+            }
+
+            /* o pulso cruza e some, depois a linha descansa até o próximo ciclo */
+            58% {
+                opacity: 1;
+            }
+
+            70%,
+            100% {
+                left: 100%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes led-breathe {
+
+            0%,
+            100% {
+                opacity: 0.55;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Filtro dourado para fotos de tom frio: o sepia puxa a imagem para o
+           quente e o saturate/hue-rotate levam o resultado para o dourado. */
+        .gold-photo {
+            filter: sepia(0.55) saturate(1.6) hue-rotate(-12deg) contrast(1.06) brightness(1.03);
+            transition: filter 0.6s ease, transform 0.7s ease;
+        }
+
+        .group:hover .gold-photo {
+            filter: sepia(0.38) saturate(1.75) hue-rotate(-10deg) contrast(1.09) brightness(1.07);
+        }
+
+        /* Glints dourados: núcleo radial + duas barras cruzadas,
+           formando o brilho de 4 pontas. */
+        .sparkle {
+            --sparkle-size: 14px;
+            position: absolute;
+            width: var(--sparkle-size);
+            height: var(--sparkle-size);
+            pointer-events: none;
+            opacity: 0;
+            background: radial-gradient(circle,
+                    #FFFDF6 0%,
+                    rgba(255, 246, 226, 0.9) 25%,
+                    rgba(232, 197, 125, 0.55) 45%,
+                    transparent 72%);
+            animation: sparkle-twinkle 4s ease-in-out infinite;
+        }
+
+        .sparkle::before,
+        .sparkle::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            margin: auto;
+        }
+
+        .sparkle::before {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right,
+                    transparent 0%,
+                    rgba(255, 246, 226, 0.95) 50%,
+                    transparent 100%);
+        }
+
+        .sparkle::after {
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(to bottom,
+                    transparent 0%,
+                    rgba(255, 246, 226, 0.95) 50%,
+                    transparent 100%);
+        }
+
+        @keyframes sparkle-twinkle {
+
+            0%,
+            70%,
+            100% {
+                opacity: 0;
+                transform: scale(0.4) rotate(0deg);
+            }
+
+            80% {
+                opacity: 1;
+                transform: scale(1.15) rotate(35deg);
+            }
+
+            90% {
+                opacity: 0.5;
+                transform: scale(0.85) rotate(60deg);
+            }
+        }
+
+        /* Ícones da navbar em dourado.
+           O PNG entra como máscara (a forma é o canal alpha) e o dourado é o
+           background pintado por baixo. O glifo continua vazado, então quem
+           aparece no miolo do círculo é o fundo escuro da navbar. */
+        .icon-gold {
+            display: inline-block;
+            flex: none;
+            background: linear-gradient(160deg, #E8C57D 0%, #C29B57 45%, #9A783E 100%);
+            -webkit-mask-image: var(--icon);
+            mask-image: var(--icon);
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .icon-gold:hover {
+            filter: brightness(1.15) saturate(1.1);
+        }
+
+        /* Atalho de serviço na navbar: o círculo vem do PNG (recortado só no
+           círculo, sem o rótulo queimado na arte) e o texto é HTML de verdade,
+           para poder ter tamanho legível e nitidez de fonte. */
+        .nav-svc {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-svc:hover {
+            transform: scale(1.08);
+        }
+
+        .nav-svc:hover .icon-gold {
+            filter: brightness(1.15) saturate(1.1);
+        }
+
+        .nav-svc-label {
+            transition: color 0.3s ease;
+        }
+
+        .nav-svc:hover .nav-svc-label {
+            color: #E8C57D;
+        }
+
+        /* ---- Texturas de fundo ----
+           Feitas com gradientes repetidos (zero requisição de imagem) e em
+           opacidade baixíssima, para dar material ao fundo sem competir com o
+           texto nem com o dourado. Aplicadas como background-image no próprio
+           elemento, então ficam sempre atrás do conteúdo. */
+
+        /* Malha diagonal cruzada: leitura de fibra de carbono / tela metálica.
+           É a textura base do site. */
+        .tx-carbon {
+            background-image:
+                repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 6px),
+                repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 6px),
+                repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.16) 0 6px, transparent 6px 12px);
+            background-size: 12px 12px, 12px 12px, 24px 24px;
+            background-position: 0 0, 6px 6px, 0 0;
+        }
+
+        /* Grade técnica, tipo prancha de diagnóstico: quadriculado fino em
+           dourado com um reforço a cada 5 divisões. */
+        .tx-grid {
+            background-image:
+                linear-gradient(rgba(194, 155, 87, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(194, 155, 87, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(194, 155, 87, 0.028) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(194, 155, 87, 0.028) 1px, transparent 1px);
+            background-size: 240px 240px, 240px 240px, 48px 48px, 48px 48px;
+        }
+
+        /* Chapa xadrez de oficina, para a faixa do rodapé */
+        .tx-plate {
+            background-image:
+                repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 14px),
+                repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 14px),
+                repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.18) 0 14px, transparent 14px 28px);
+            background-size: 28px 28px, 28px 28px, 56px 56px;
+        }
+
+        /* ---- Abertura do hero no mobile ----
+           O vídeo entra como animação de abertura cobrindo o hero, e sai de
+           cena quando o carro para. Depois dele o mobile não tem mais vídeo: o
+           hero fica no fundo escuro com a textura, como era antes.
+
+           O estado é a classe .hero-intro no <html>, posta por um script no
+           <head> (antes do primeiro paint, senão o hero normal apareceria por
+           um instante antes do vídeo cobrir) e removida no fim da animação.
+           Sem JS a classe nunca entra e o mobile mostra o hero normal. */
+        @media (max-width: 1023px) {
+
+            /* padrão do mobile: sem vídeo */
+            .hero-video-wrap {
+                opacity: 0;
+                visibility: hidden;
+                z-index: 40;
+                transition: opacity 0.8s ease, visibility 0.8s ease;
+            }
+
+            .hero-intro .hero-video-wrap {
+                opacity: 1;
+                visibility: visible;
+                /* fundo sólido enquanto o vídeo não está pronto, para não
+                   aparecer o hero por trás nem quadros soltos */
+                background: #1C1C1E;
+            }
+
+            /* sem texto sobre o vídeo, o véu inferior não tem função na abertura */
+            .hero-intro .hero-fade-mobile {
+                opacity: 0;
+            }
+
+            /* O vídeo é 16:9 e a tela do celular é 9:19.5. Com object-cover
+               sobrava um close da grade do carro; com contain a composição
+               inteira aparece, centralizada sobre o fundo escuro. */
+            .hero-intro #hero-video {
+                object-fit: contain;
+            }
+
+            .hero-intro-logo {
+                display: none;
+            }
+
+            .hero-intro .hero-intro-logo {
+                display: block;
+                position: absolute;
+                left: 50%;
+                top: 18%;
+                transform: translateX(-50%);
+                width: 62%;
+                max-width: 250px;
+                z-index: 2;
+                filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.7));
+                animation: hero-logo-in 1.1s cubic-bezier(0.5, 0, 0, 1) both;
+            }
+
+            @keyframes hero-logo-in {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, 14px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, 0);
+                }
+            }
+
+            /* o botão flutuante do WhatsApp por cima da abertura polui a cena */
+            .hero-intro .shimmer.led-ring.fixed {
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.5s ease;
+            }
+
+            .hero-content {
+                transition: opacity 1s ease, transform 1s cubic-bezier(0.5, 0, 0, 1);
+            }
+
+            /* o #hero garante especificidade sobre .reveal.active, que já teria
+               marcado o conteúdo como visível por estar na viewport */
+            .hero-intro #hero .hero-content {
+                opacity: 0;
+                transform: translateY(28px);
+                pointer-events: none;
+            }
+
+            .hero-intro .scroll-hint {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Seta de "role a página" no pé do hero. Some sozinha quando o
+           visitante começa a rolar (a classe é trocada pelo mesmo listener
+           de scroll que controla a navbar). */
+        .scroll-hint {
+            position: absolute;
+            left: 50%;
+            bottom: 22px;
+            transform: translateX(-50%);
+            z-index: 30;
+            color: #E8C57D;
+            /* o brilho: duas sombras, uma quente colada e uma larga difusa */
+            filter: drop-shadow(0 0 4px rgba(255, 246, 226, 0.9))
+                drop-shadow(0 0 10px rgba(194, 155, 87, 0.6));
+            animation: scroll-hint-bob 1.9s ease-in-out infinite;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .scroll-hint.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        @keyframes scroll-hint-bob {
+
+            0%,
+            100% {
+                transform: translate(-50%, 0);
+                opacity: 0.55;
+            }
+
+            50% {
+                transform: translate(-50%, 7px);
+                opacity: 1;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .scroll-hint {
+                animation: none;
+            }
+        }
+
+        /* ---- Vitrine do Instagram ----
+           Os embeds oficiais foram trocados por cards próprios: o widget do
+           Instagram vinha com cabeçalho branco, tarja preta em volta do vídeo
+           9:16 e um script de terceiros pesado, nada disso estilizável por ser
+           iframe de outro domínio. As capas foram recortadas dos prints.
+
+           A altura dos cards é a régua da seção: o iPhone ao lado mede
+           exatamente dois cards mais o gap entre eles. */
+        .ig-showcase {
+            --ig-card-h: 290px;
+            --ig-gap: 20px;
+        }
+
+        @media (min-width: 1024px) {
+            .ig-showcase {
+                --ig-card-h: 310px;
+            }
+        }
+
+        .ig-reel {
+            position: relative;
+            display: block;
+            height: var(--ig-card-h);
+            border-radius: 22px;
+            overflow: hidden;
+            border: 1px solid rgba(194, 155, 87, 0.25);
+            background: #101012;
+            box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.9);
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .ig-reel:hover {
+            transform: translateY(-4px);
+            border-color: rgba(232, 197, 125, 0.6);
+            box-shadow: 0 26px 50px -22px rgba(0, 0, 0, 0.95),
+                0 0 30px -12px rgba(194, 155, 87, 0.45);
+        }
+
+        .ig-reel img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+
+        .ig-reel:hover img {
+            transform: scale(1.06);
+        }
+
+        .ig-reel-veil {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top,
+                    rgba(16, 16, 18, 0.94) 0%,
+                    rgba(16, 16, 18, 0.35) 38%,
+                    transparent 68%);
+            pointer-events: none;
+        }
+
+        .ig-reel-play {
+            position: absolute;
+            top: 46%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            color: #1C1C1E;
+            background: linear-gradient(160deg, #F2DDB0 0%, #C29B57 60%, #9A783E 100%);
+            box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.7),
+                0 0 0 6px rgba(194, 155, 87, 0.16);
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            pointer-events: none;
+        }
+
+        .ig-reel:hover .ig-reel-play {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.75),
+                0 0 0 11px rgba(194, 155, 87, 0.22);
+        }
+
+        .ig-reel-info {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            pointer-events: none;
+        }
+
+        .ig-reel-info strong {
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+
+        .ig-reel-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #E8C57D;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* o lucide troca o <i> por <svg>, então a seta é o svg */
+        .ig-reel-link svg {
+            transition: transform 0.3s ease;
+        }
+
+        .ig-reel:hover .ig-reel-link svg {
+            transform: translate(2px, -2px);
+        }
+
+        /* ---- Simulador de iPhone ----
+           A moldura é o padding do .ig-phone pintado com um gradiente dourado
+           que alterna claro/escuro para simular metal. A tela é a área interna
+           com overflow, onde os prints do perfil rolam de verdade. */
+        .ig-phone {
+            position: relative;
+            flex: none;
+            height: calc(var(--ig-card-h) * 2 + var(--ig-gap));
+            aspect-ratio: 9 / 19.5;
+            /* moldura fina: 4px de dourado + 1px de sombra interna no vidro */
+            padding: 4px;
+            border-radius: 42px;
+            background: linear-gradient(160deg,
+                    #F2DDB0 0%,
+                    #E8C57D 16%,
+                    #C29B57 46%,
+                    #9A783E 78%,
+                    #E8C57D 100%);
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85),
+                0 0 45px -12px rgba(194, 155, 87, 0.4);
+        }
+
+        /* Botões laterais */
+        .ig-phone::before,
+        .ig-phone::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            border-radius: 2px;
+            background: linear-gradient(#C29B57, #9A783E);
+        }
+
+        .ig-phone::before {
+            left: -2px;
+            top: 24%;
+            height: 8%;
+        }
+
+        .ig-phone::after {
+            right: -2px;
+            top: 28%;
+            height: 12%;
+        }
+
+        .ig-phone-screen {
+            position: relative;
+            height: 100%;
+            border-radius: 38px;
+            overflow: hidden;
+            background: #000;
+            /* fio escuro entre o dourado e a tela, como no aparelho real */
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Reflexo diagonal de vidro */
+        .ig-phone-screen::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg,
+                    rgba(255, 255, 255, 0.10) 0%,
+                    rgba(255, 255, 255, 0.03) 20%,
+                    transparent 42%);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .ig-phone-scroll {
+            height: 100%;
+            overflow-y: auto;
+            /* não deixa o scroll "vazar" para a página ao chegar no fim */
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .ig-phone-scroll::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        .ig-phone-scroll img {
+            display: block;
+            width: 100%;
+        }
+
+        /* Os dois prints já vêm tratados (faixa de "seguido por" e cabeçalho
+           duplicado removidos no arquivo), então empilham direto e a rolagem
+           fica contínua, sem recorte por CSS. */
+
+        .ig-phone-island {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28%;
+            height: 16px;
+            border-radius: 999px;
+            background: #000;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        /* Barrinha de home do iOS */
+        .ig-phone-home {
+            position: absolute;
+            bottom: 7px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32%;
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.55);
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        /* Sombra no pé da tela: sinaliza que há mais conteúdo abaixo */
+        .ig-phone-fade {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 46px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ---- Cursor personalizado + rastro dourado ----
+           A classe .has-custom-cursor só é adicionada pelo JS quando o
+           dispositivo tem mouse. Se o JS falhar, o cursor nativo continua lá. */
+        .has-custom-cursor,
+        .has-custom-cursor a,
+        .has-custom-cursor button,
+        .has-custom-cursor [role="button"],
+        .has-custom-cursor iframe {
+            cursor: none;
+        }
+
+        #cursor-trail {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            pointer-events: none;
+        }
+
+        .cursor-el {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            will-change: transform;
+            transition: opacity 0.3s ease;
+        }
+
+        .cursor-el.is-visible {
+            opacity: 1;
+        }
+
+        #cursor-dot {
+            width: 7px;
+            height: 7px;
+            margin: -3.5px 0 0 -3.5px;
+            background: #FFF6E2;
+            box-shadow: 0 0 10px 2px rgba(232, 197, 125, 0.9);
+        }
+
+        #cursor-ring {
+            width: 32px;
+            height: 32px;
+            margin: -16px 0 0 -16px;
+            border: 1.5px solid rgba(194, 155, 87, 0.65);
+            box-shadow: 0 0 12px rgba(194, 155, 87, 0.25),
+                inset 0 0 12px rgba(194, 155, 87, 0.15);
+            transition: opacity 0.3s ease, width 0.25s ease, height 0.25s ease,
+                margin 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+        }
+
+        /* Sobre links e botões o anel abre e acende */
+        #cursor-ring.is-hover {
+            width: 54px;
+            height: 54px;
+            margin: -27px 0 0 -27px;
+            border-color: #E8C57D;
+            background: rgba(194, 155, 87, 0.12);
+        }
+
+        /* No clique, o anel contrai */
+        #cursor-ring.is-down {
+            width: 24px;
+            height: 24px;
+            margin: -12px 0 0 -12px;
+            background: rgba(232, 197, 125, 0.25);
+        }
+
+        /* Respeita quem prefere menos animação */
+        @media (prefers-reduced-motion: reduce) {
+
+            .btn-premium::after,
+            .shimmer::after,
+            .text-gradient-gold,
+            .led-divider,
+            .led-divider::after,
+            .led-ring::before,
+            .sparkle {
+                animation: none;
+            }
+
+            .sparkle {
+                display: none;
+            }
+
+            .led-divider::after {
+                display: none;
+            }
+        }
+
+        /* ---- Menu mobile ----
+           No mobile a navbar já nasce visível (sem esperar scroll), então ela é
+           escondida enquanto a abertura do hero está rodando. */
+        @media (max-width: 1023px) {
+            .hero-intro #main-header {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            border-radius: 2px;
+            background: #E8C57D;
+            transition: transform 0.3s ease, opacity 0.2s ease;
+        }
+
+        .menu-toggle span+span {
+            margin-top: 5px;
+        }
+
+        /* as três barras viram um X */
+        .menu-toggle[aria-expanded="true"] span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .menu-toggle[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle[aria-expanded="true"] span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        .menu-mobile {
+            /* fundo praticamente sólido: o menu fica sobre o hero, e translucidez
+               com blur deixava o conteúdo de trás vazando e o texto lavado */
+            background-color: rgba(19, 19, 22, 0.985);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+        }
+
+        .menu-mobile.is-open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* ---- Cards de serviço em acordeão (só no celular) ----
+           No desktop o botão é apenas o título de sempre e todo o conteúdo fica
+           aberto; abaixo de 640px cada card vira um dropdown e abrir um fecha
+           os demais. */
+        .svc-card-toggle {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            text-align: left;
+            font: inherit;
+            color: inherit;
+            cursor: default;
+        }
+
+        .svc-card-chevron {
+            display: none;
+        }
+
+        /* o painel precisa continuar sendo coluna flexível no desktop, senão o
+           mt-auto do botão de orçamento perde a referência e os CTAs deixam de
+           alinhar na base dos cards */
+        .svc-card-panel,
+        .svc-card-panel-inner {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 639px) {
+
+            /* o card todo é a área de clique */
+            .svc-card,
+            .svc-card-toggle {
+                cursor: pointer;
+            }
+
+            .svc-card-chevron {
+                display: block;
+                flex: none;
+                color: #C29B57;
+                transition: transform 0.35s ease;
+            }
+
+            .svc-card.is-open .svc-card-chevron {
+                transform: rotate(180deg);
+            }
+
+            /* grid de 0fr para 1fr anima a altura sem precisar saber o valor */
+            .svc-card-panel {
+                display: grid;
+                grid-template-rows: 0fr;
+                opacity: 0;
+                transition: grid-template-rows 0.4s ease, opacity 0.3s ease;
+            }
+
+            .svc-card.is-open .svc-card-panel {
+                grid-template-rows: 1fr;
+                opacity: 1;
+            }
+
+            .svc-card-panel-inner {
+                overflow: hidden;
+                min-height: 0;
+            }
+
+            /* fechado, o card encolhe: a foto perde altura e vira uma faixa */
+            .svc-card>div:first-child {
+                transition: aspect-ratio 0.4s ease;
+            }
+
+            .svc-card:not(.is-open)>div:first-child {
+                aspect-ratio: 16 / 7;
+            }
+        }
     </style>
+
+    <!-- Marca a abertura do hero ANTES do primeiro paint. Se isso rodasse no
+         fim do body, o hero normal apareceria por um instante antes do vídeo
+         cobrir a tela. Sem JS a classe nunca entra e o mobile já nasce com o
+         hero normal, sem vídeo. -->
+    <script>
+        (function () {
+            if (window.matchMedia('(max-width: 1023px)').matches &&
+                !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.documentElement.classList.add('hero-intro');
+            }
+        })();
+    </script>
 </head>
 
 <body class="bg-brand-dark text-gray-300 font-sans antialiased selection:bg-brand-gold selection:text-white">
 
     <!-- HEADER / NAVBAR -->
-    <header id="main-header" class="fixed w-full top-0 z-50 bg-[#141416]/95 backdrop-blur-md border-b border-brand-gold/20 shadow-2xl transition-all duration-500 -translate-y-full opacity-0">
-        <div class="max-w-7xl mx-auto px-6 h-20 md:h-24 flex items-center justify-between">
+    <header id="main-header"
+        class="fixed inset-x-0 top-0 z-50 px-3 sm:px-5 lg:px-8 pt-3 sm:pt-4 pointer-events-none transition-all duration-500 -translate-y-full opacity-0">
+        <div
+            class="pointer-events-auto max-w-7xl mx-auto px-4 sm:px-6 h-16 md:h-[72px] flex items-center justify-between bg-[#141416]/95 backdrop-blur-md border border-brand-gold/20 rounded-3xl shadow-2xl shadow-black/50">
 
             <!-- Logo na Esquerda -->
             <div class="flex items-center">
                 <a href="#">
                     <img src="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png"
                         alt="Rede Prime Auto Center Logo"
-                        class="h-10 md:h-12 w-auto object-contain drop-shadow-lg transition-all">
+                        class="h-8 md:h-10 w-auto object-contain drop-shadow-lg transition-all">
                 </a>
             </div>
 
-            <!-- Ícones no Meio -->
-            <div class="hidden md:flex items-center gap-3 lg:gap-5 justify-center flex-1 mx-2 lg:mx-4">
-                <img src="./icones/Financiamento de Veículo.png" alt="Financiamento"
-                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
-                    title="Financiamento">
-                <img src="./icones/Revisão de Fabrica.png" alt="Revisão de Fábrica"
-                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
-                    title="Revisão de Fábrica">
-                <img src="./icones/Troca de oleo cambio.png" alt="Troca de Óleo/Câmbio"
-                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
-                    title="Troca de Óleo e Câmbio">
-                <img src="./icones/Pneus.png" alt="Pneus"
-                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
-                    title="Pneus">
-                <img src="./icones/Suspensão.png" alt="Suspensão"
-                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
-                    title="Suspensão">
-                <img src="./icones/Freios.png" alt="Freios"
-                    class="h-16 lg:h-[72px] xl:h-20 w-auto object-contain hover:scale-110 transition-transform"
-                    title="Freios">
-            </div>
+            <!-- Ícones no Meio.
+                 A arte dos PNGs é branca pura e a forma vem só do canal alpha
+                 (o glifo é um recorte vazado), então usamos o próprio arquivo
+                 como máscara CSS e pintamos o dourado por baixo. -->
+            <nav class="hidden lg:flex items-center gap-4 xl:gap-5 justify-center flex-1 mx-2 lg:mx-4"
+                aria-label="Atalhos para os serviços">
+                <a href="#financiamento" class="nav-svc" title="Financiamento de Veículo">
+                    <span class="icon-gold w-9 lg:w-10 xl:w-11 aspect-square" aria-hidden="true"
+                        style="--icon: url('./icones/circ-financiamento.png')"></span>
+                    <span
+                        class="nav-svc-label text-[9px] lg:text-[11px] font-semibold uppercase tracking-wider leading-none text-brand-goldLight/85 whitespace-nowrap">Financiamento</span>
+                </a>
+                <a href="#revisao" class="nav-svc" title="Revisão de Fábrica">
+                    <span class="icon-gold w-9 lg:w-10 xl:w-11 aspect-square" aria-hidden="true"
+                        style="--icon: url('./icones/circ-revisao.png')"></span>
+                    <span
+                        class="nav-svc-label text-[9px] lg:text-[11px] font-semibold uppercase tracking-wider leading-none text-brand-goldLight/85 whitespace-nowrap">Revisão</span>
+                </a>
+                <a href="#oleo-cambio" class="nav-svc" title="Troca de Óleo e Câmbio">
+                    <span class="icon-gold w-9 lg:w-10 xl:w-11 aspect-square" aria-hidden="true"
+                        style="--icon: url('./icones/circ-oleo-cambio.png')"></span>
+                    <span
+                        class="nav-svc-label text-[9px] lg:text-[11px] font-semibold uppercase tracking-wider leading-none text-brand-goldLight/85 whitespace-nowrap">Óleo/Câmbio</span>
+                </a>
+                <a href="#pneus" class="nav-svc" title="Pneus e Geometria">
+                    <span class="icon-gold w-9 lg:w-10 xl:w-11 aspect-square" aria-hidden="true"
+                        style="--icon: url('./icones/circ-pneus.png')"></span>
+                    <span
+                        class="nav-svc-label text-[9px] lg:text-[11px] font-semibold uppercase tracking-wider leading-none text-brand-goldLight/85 whitespace-nowrap">Pneus</span>
+                </a>
+                <a href="#suspensao" class="nav-svc" title="Suspensão">
+                    <span class="icon-gold w-9 lg:w-10 xl:w-11 aspect-square" aria-hidden="true"
+                        style="--icon: url('./icones/circ-suspensao.png')"></span>
+                    <span
+                        class="nav-svc-label text-[9px] lg:text-[11px] font-semibold uppercase tracking-wider leading-none text-brand-goldLight/85 whitespace-nowrap">Suspensão</span>
+                </a>
+                <a href="#freios" class="nav-svc" title="Sistemas de Freios">
+                    <span class="icon-gold w-9 lg:w-10 xl:w-11 aspect-square" aria-hidden="true"
+                        style="--icon: url('./icones/circ-freios.png')"></span>
+                    <span
+                        class="nav-svc-label text-[9px] lg:text-[11px] font-semibold uppercase tracking-wider leading-none text-brand-goldLight/85 whitespace-nowrap">Freios</span>
+                </a>
+            </nav>
 
             <!-- Botão Direita -->
             <div class="hidden lg:flex items-center justify-end w-[200px]">
                 <a href="#agendamento"
-                    class="btn-premium bg-brand-gold text-brand-dark font-bold px-4 py-2.5 rounded text-sm uppercase tracking-wide whitespace-nowrap">
+                    class="btn-premium led-ring bg-brand-gold text-brand-dark font-bold px-4 py-2.5 rounded-full text-sm uppercase tracking-wide whitespace-nowrap">
                     Agendar Avaliação
                 </a>
             </div>
-            <!-- Espaçador no tablet para não quebrar o layout se não couber o botão -->
-            <div class="hidden md:block lg:hidden w-[120px]"></div>
+
+            <!-- Botão do menu: só abaixo de lg, onde os atalhos e o CTA não
+                 caberiam na barra -->
+            <button id="menu-toggle" type="button"
+                class="menu-toggle lg:hidden flex flex-col items-center justify-center w-11 h-11 -mr-1 rounded-full border border-brand-gold/30 bg-brand-gold/5"
+                aria-expanded="false" aria-controls="menu-mobile" aria-label="Abrir menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- Painel do menu: os mesmos destinos da navbar do desktop, em texto -->
+        <div id="menu-mobile"
+            class="menu-mobile lg:hidden pointer-events-auto max-w-7xl mx-auto mt-2 p-3 border border-brand-gold/20 rounded-3xl shadow-2xl shadow-black/60">
+            <nav class="flex flex-col" aria-label="Menu de serviços">
+                <a href="#financiamento"
+                    class="menu-link px-4 py-3 rounded-2xl text-sm font-semibold text-gray-200 hover:text-brand-dark hover:bg-brand-gold transition-colors">Financiamento
+                    de Veículo</a>
+                <a href="#revisao"
+                    class="menu-link px-4 py-3 rounded-2xl text-sm font-semibold text-gray-200 hover:text-brand-dark hover:bg-brand-gold transition-colors">Revisão
+                    de Fábrica</a>
+                <a href="#oleo-cambio"
+                    class="menu-link px-4 py-3 rounded-2xl text-sm font-semibold text-gray-200 hover:text-brand-dark hover:bg-brand-gold transition-colors">Troca
+                    de Óleo e Câmbio</a>
+                <a href="#pneus"
+                    class="menu-link px-4 py-3 rounded-2xl text-sm font-semibold text-gray-200 hover:text-brand-dark hover:bg-brand-gold transition-colors">Pneus
+                    e Geometria</a>
+                <a href="#suspensao"
+                    class="menu-link px-4 py-3 rounded-2xl text-sm font-semibold text-gray-200 hover:text-brand-dark hover:bg-brand-gold transition-colors">Suspensão</a>
+                <a href="#freios"
+                    class="menu-link px-4 py-3 rounded-2xl text-sm font-semibold text-gray-200 hover:text-brand-dark hover:bg-brand-gold transition-colors">Sistemas
+                    de Freios</a>
+            </nav>
+            <a href="#agendamento"
+                class="menu-link btn-premium led-ring mt-3 flex items-center justify-center bg-brand-gold text-brand-dark font-bold px-6 py-3.5 rounded-full text-sm uppercase tracking-wide leading-none">
+                Agendar Avaliação
+            </a>
         </div>
     </header>
 
     <!-- DOBRA 1: HERO SECTION -->
-    <section class="relative bg-brand-dark overflow-hidden">
+    <section id="hero" class="relative tx-carbon bg-brand-dark overflow-hidden">
         <div class="relative flex flex-col lg:flex-row min-h-[100dvh]">
 
-            <!-- Vídeo (Absoluto no Mobile e Desktop) -->
-            <div
-                class="absolute inset-x-0 top-0 lg:left-auto lg:right-0 lg:bottom-0 w-full h-[55vh] lg:h-full lg:w-[60%] z-0">
+            <!-- Vídeo: no mobile cobre o hero só durante a abertura e depois
+                 sai de cena; no desktop é a faixa fixa da direita. -->
+            <div class="hero-video-wrap absolute inset-x-0 top-0 bottom-0 lg:left-auto lg:right-0 w-full h-full lg:w-[60%] z-0">
                 <!-- Fade lateral desktop -->
                 <div
                     class="hidden lg:block absolute inset-y-0 left-0 w-[60%] bg-gradient-to-r from-brand-dark via-brand-dark/80 to-transparent z-10 pointer-events-none">
                 </div>
                 <!-- Fade inferior mobile -->
                 <div
-                    class="block lg:hidden absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/80 to-transparent z-10 pointer-events-none">
+                    class="hero-fade-mobile block lg:hidden absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/80 to-transparent z-10 pointer-events-none">
                 </div>
 
-                <video autoplay muted playsinline class="w-full h-full object-cover object-center">
-                    <source
-                        src="./midias/1780682137_Criar_um_v--deo_cinematogr--fico.mp4"
-                        type="video/mp4">
+                <!-- Logo da abertura: ocupa o espaço acima da faixa do vídeo,
+                     que sobra porque o vídeo é 16:9 e a tela do celular é alta -->
+                <img src="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png" alt=""
+                    aria-hidden="true" class="hero-intro-logo">
+
+                <video id="hero-video" autoplay muted playsinline preload="auto"
+                    class="w-full h-full object-cover object-center">
+                    <source src="./midias/hero-intro.mp4" type="video/mp4">
                     Seu navegador não suporta a reprodução de vídeos.
                 </video>
             </div>
 
             <!-- Conteúdo Textual -->
             <div
-                class="relative z-20 max-w-7xl mx-auto px-6 w-full flex-grow flex flex-col justify-end lg:justify-center pb-12 pt-[45vh] lg:pb-0 lg:pt-0">
-                <div class="w-full lg:w-[55%] reveal">
+                class="hero-content relative z-20 max-w-7xl mx-auto px-6 w-full flex-grow flex flex-col justify-center pt-28 pb-16 lg:pb-0 lg:pt-0">
+                <div class="w-full lg:w-[55%] reveal text-center lg:text-left">
 
                     <!-- Logo na Hero -->
                     <img src="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png"
                         alt="Rede Prime Auto Center Logo"
-                        class="h-16 sm:h-20 md:h-24 lg:h-24 w-auto object-contain mb-6 lg:mb-8 drop-shadow-2xl">
+                        class="h-16 sm:h-20 md:h-24 lg:h-24 w-auto object-contain mx-auto lg:mx-0 mb-6 lg:mb-8 drop-shadow-2xl">
 
                     <span
-                        class="text-brand-gold font-semibold tracking-widest uppercase text-[10px] sm:text-xs mb-2 lg:mb-4 flex items-center gap-2">
-                        <span class="w-6 sm:w-8 h-[1px] bg-brand-gold"></span>
+                        class="inline-flex items-center rounded-full border border-brand-gold/40 bg-brand-gold/10 px-3.5 py-1.5 text-brand-gold font-semibold tracking-widest uppercase text-[10px] sm:text-xs mb-3 lg:mb-4 backdrop-blur-sm">
                         O Alto Padrão Chegou a Uberlândia
                     </span>
 
@@ -230,236 +1282,551 @@
                     </h1>
 
                     <p
-                        class="text-sm sm:text-base md:text-xl text-gray-400 mb-5 lg:mb-6 leading-relaxed max-w-md lg:max-w-none">
+                        class="text-sm sm:text-base md:text-xl text-gray-400 mb-5 lg:mb-6 leading-relaxed max-w-md lg:max-w-none mx-auto lg:mx-0">
                         Seu carro nas mãos de especialistas. Estrutura de ponta, diagnósticos computadorizados e total
                         transparência operacional na Av. Sacadura Cabral,1040 - Alto Umuarama - Uberlândia.
                     </p>
 
-                    <div
-                        class="w-full lg:w-4/5 xl:w-3/4 h-48 sm:h-56 lg:h-48 xl:h-56 rounded-xl overflow-hidden border border-brand-gold/20 shadow-2xl shadow-brand-gold/5 mt-4 lg:mt-6">
-                        <iframe
-                            src="https://maps.google.com/maps?q=Av.+Sacadura+Cabral,+1040+-+Alto+Umuarama+-+Uberl%C3%A2ndia&t=&z=16&ie=UTF8&iwloc=B&output=embed"
-                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <div class="mt-2 lg:mt-4">
+                        <a href="https://wa.me/5534984304340" target="_blank" rel="noopener"
+                            class="btn-premium led-ring inline-flex w-full sm:w-auto items-center justify-center gap-2.5 bg-brand-gold text-brand-dark font-bold px-8 py-4 rounded-full uppercase tracking-wide text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="currentColor"
+                                viewBox="0 0 16 16" aria-hidden="true">
+                                <path
+                                    d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
+                            </svg>
+                            Agendar pelo WhatsApp
+                        </a>
                     </div>
                 </div>
             </div>
 
         </div>
+
+        <!-- Indicação de rolagem -->
+        <a href="#servicos" id="scroll-hint" class="scroll-hint" aria-label="Rolar para os serviços">
+            <i data-lucide="chevron-down" class="w-5 h-5"></i>
+        </a>
     </section>
 
-    <!-- DOBRA 2: FINANCIAMENTO E REVISÃO DE FÁBRICA -->
-    <section class="py-24 bg-brand-dark relative border-t border-white/5 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col gap-24 lg:gap-32">
-            
-            <!-- Serviço 1: Financiamento -->
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-                <!-- Imagem -->
-                <div class="w-full lg:w-1/2 reveal relative">
-                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
-                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
-                        <img src="./midias/1781543741_ChatGPT-Image-15_06_2026--14_14_38.png" alt="Financiamento" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
-                    </div>
-                    <!-- Ícone Sobreposto -->
-                    <img src="./icones/Financiamento de Veículo.png" alt="Icone Financiamento" class="absolute -bottom-8 right-4 lg:top-1/2 lg:-translate-y-1/2 lg:-right-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
-                </div>
-                <!-- Conteúdo -->
-                <div class="w-full lg:w-1/2 reveal flex flex-col items-start text-left mt-6 lg:mt-0 lg:pl-12">
-                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Financiamento de Veículo</h3>
-                    <p class="text-gray-400 leading-relaxed text-lg">Condições exclusivas e flexíveis para você não adiar o cuidado com o seu carro. Processo rápido, transparente e com as melhores taxas do mercado para viabilizar sua manutenção.</p>
-                </div>
-            </div>
+    <!-- Divisória LED -->
+    <div class="led-divider" style="--led-delay: 0s" aria-hidden="true"></div>
 
-            <!-- Serviço 2: Revisão de Fábrica -->
-            <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16">
-                <!-- Imagem -->
-                <div class="w-full lg:w-1/2 reveal delay-100 relative">
-                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
-                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
-                        <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_55.png" alt="Revisão de Fábrica" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
-                    </div>
-                    <!-- Ícone Sobreposto -->
-                    <img src="./icones/Revisão de Fabrica.png" alt="Icone Revisão" class="absolute -bottom-8 left-4 lg:top-1/2 lg:-translate-y-1/2 lg:-left-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
-                </div>
-                <!-- Conteúdo -->
-                <div class="w-full lg:w-1/2 reveal delay-100 flex flex-col items-start text-left mt-6 lg:mt-0 lg:pr-12">
-                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Revisão de Fábrica</h3>
-                    <p class="text-gray-400 leading-relaxed text-lg">Manutenção preventiva que segue rigorosamente os manuais das montadoras. Preservamos a garantia do seu veículo utilizando peças e fluidos de alto padrão e especificações exatas.</p>
-                </div>
-            </div>
 
-        </div>
-    </section>
-
-    <!-- DOBRA 3: TROCA DE ÓLEO/CÂMBIO E PNEUS -->
-    <section class="py-24 bg-[#141416] relative border-t border-white/5 overflow-hidden">
+    <!-- DOBRA 2: SERVIÇOS -->
+    <section id="servicos" class="py-24 lg:py-32 tx-carbon bg-brand-dark relative overflow-hidden">
         <div
-            class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-gold/5 via-brand-dark/0 to-transparent pointer-events-none">
+            class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-gold/5 via-transparent to-transparent pointer-events-none">
         </div>
-        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col gap-24 lg:gap-32">
-            
-            <!-- Serviço 3: Troca de Óleo -->
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-                <!-- Imagem -->
-                <div class="w-full lg:w-1/2 reveal relative">
-                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
-                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
-                        <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_46.png" alt="Troca de Óleo e Câmbio" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+            <!-- Cabeçalho da Seção -->
+            <div class="max-w-2xl mx-auto text-center mb-16 lg:mb-20 reveal">
+                <span
+                    class="inline-flex items-center rounded-full border border-brand-gold/40 bg-brand-gold/10 px-3.5 py-1.5 text-brand-gold font-semibold tracking-widest uppercase text-[10px] sm:text-xs mb-5 backdrop-blur-sm">
+                    Nossos Serviços
+                </span>
+                <h2 class="font-heading text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
+                    Tudo que o seu carro precisa, <span class="text-gradient-gold">em um só lugar.</span>
+                </h2>
+                <p class="text-gray-400 text-lg leading-relaxed">
+                    Diagnóstico preciso, peças de alto padrão e transparência do orçamento à entrega.
+                </p>
+            </div>
+
+            <!-- Destaque 1: Freios -->
+            <div id="freios" class="scroll-mt-28 flex flex-col lg:flex-row items-center gap-10 lg:gap-16 mb-16 lg:mb-24">
+                <div class="w-full lg:w-1/2 reveal">
+                    <div
+                        class="aspect-[4/3] lg:aspect-video rounded-3xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
+                        <div
+                            class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
+                        </div>
+                        <img src="./midias/1781544394_ChatGPT-Image-15_06_2026--14_26_25.png" alt="Sistemas de Freios"
+                            loading="lazy" decoding="async"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
                     </div>
-                    <!-- Ícone Sobreposto -->
-                    <img src="./icones/Troca de oleo cambio.png" alt="Icone Troca de Óleo" class="absolute -bottom-8 right-4 lg:top-1/2 lg:-translate-y-1/2 lg:-right-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
                 </div>
-                <!-- Conteúdo -->
-                <div class="w-full lg:w-1/2 reveal flex flex-col items-start text-left mt-6 lg:mt-0 lg:pl-12">
-                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Troca de Óleo e Câmbio</h3>
-                    <p class="text-gray-400 leading-relaxed text-lg">Somos especialistas em transmissão automática e manual. Realizamos a troca de fluidos com equipamentos de extrema precisão, garantindo a máxima suavidade, desempenho e vida útil do sistema.</p>
+                <div class="w-full lg:w-1/2 reveal delay-100 flex flex-col items-center text-center lg:items-start lg:text-left">
+                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-5">Sistemas de Freios</h3>
+                    <ul class="flex flex-col gap-3 mb-8 text-left text-gray-300 text-base lg:text-lg">
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-gold shrink-0 mt-0.5"></i>
+                            Pastilhas, discos e fluido de freio
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-gold shrink-0 mt-0.5"></i>
+                            Diagnóstico completo do sistema ABS
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-gold shrink-0 mt-0.5"></i>
+                            Peças com os mais altos padrões de qualidade
+                        </li>
+                    </ul>
+                    <a href="https://wa.me/5534984304340?text=Ol%C3%A1!%20Quero%20um%20or%C3%A7amento%20de%20Freios."
+                        target="_blank" rel="noopener"
+                        class="btn-premium led-ring inline-flex w-full sm:w-auto items-center justify-center gap-2.5 bg-brand-gold text-brand-dark font-bold px-8 py-4 rounded-full uppercase tracking-wide text-sm">
+                        Orçamento no WhatsApp
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
                 </div>
             </div>
 
-            <!-- Serviço 4: Pneus e Geometria -->
-            <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16">
-                <!-- Imagem -->
-                <div class="w-full lg:w-1/2 reveal delay-100 relative">
-                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
-                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
-                        <img src="./midias/1781544150_ChatGPT-Image-15_06_2026--14_22_19.png" alt="Pneus e Geometria" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
+            <!-- Destaque 2: Troca de Óleo e Câmbio -->
+            <div id="oleo-cambio" class="scroll-mt-28 flex flex-col lg:flex-row-reverse items-center gap-10 lg:gap-16 mb-20 lg:mb-28">
+                <div class="w-full lg:w-1/2 reveal">
+                    <div
+                        class="aspect-[4/3] lg:aspect-video rounded-3xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
+                        <div
+                            class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none">
+                        </div>
+                        <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_46.png" alt="Troca de Óleo e Câmbio"
+                            loading="lazy" decoding="async"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
                     </div>
-                    <!-- Ícone Sobreposto -->
-                    <img src="./icones/Pneus.png" alt="Icone Pneus" class="absolute -bottom-8 left-4 lg:top-1/2 lg:-translate-y-1/2 lg:-left-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
                 </div>
-                <!-- Conteúdo -->
-                <div class="w-full lg:w-1/2 reveal delay-100 flex flex-col items-start text-left mt-6 lg:mt-0 lg:pr-12">
-                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Pneus e Geometria</h3>
-                    <p class="text-gray-400 leading-relaxed text-lg">Trabalhamos com as melhores marcas de pneus, aliadas a serviços de alinhamento 3D e balanceamento computadorizado. Mais segurança, estabilidade e aderência para você rodar com tranquilidade.</p>
+                <div class="w-full lg:w-1/2 reveal delay-100 flex flex-col items-center text-center lg:items-start lg:text-left">
+                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-5">Troca de Óleo e Câmbio</h3>
+                    <ul class="flex flex-col gap-3 mb-8 text-left text-gray-300 text-base lg:text-lg">
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-gold shrink-0 mt-0.5"></i>
+                            Especialistas em câmbio automático e manual
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-gold shrink-0 mt-0.5"></i>
+                            Troca de fluidos com equipamento de precisão
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-gold shrink-0 mt-0.5"></i>
+                            Óleos e filtros na especificação da montadora
+                        </li>
+                    </ul>
+                    <a href="https://wa.me/5534984304340?text=Ol%C3%A1!%20Quero%20um%20or%C3%A7amento%20de%20Troca%20de%20%C3%93leo%2FC%C3%A2mbio."
+                        target="_blank" rel="noopener"
+                        class="btn-premium led-ring inline-flex w-full sm:w-auto items-center justify-center gap-2.5 bg-brand-gold text-brand-dark font-bold px-8 py-4 rounded-full uppercase tracking-wide text-sm">
+                        Orçamento no WhatsApp
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
                 </div>
             </div>
 
+            <!-- Demais Serviços -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <!-- Suspensão -->
+                <article id="suspensao" data-svc-card
+                    class="svc-card scroll-mt-28 reveal group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
+                    <div class="aspect-[4/3] overflow-hidden relative">
+                        <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_49.png" alt="Suspensão"
+                            loading="lazy" decoding="async"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-brand-card via-brand-card/20 to-transparent pointer-events-none">
+                        </div>
+                    </div>
+                    <div class="flex flex-col flex-grow p-6">
+                        <h3 class="font-heading text-xl font-bold text-white mb-4">
+                            <button type="button" class="svc-card-toggle" aria-expanded="true"
+                                aria-controls="painel-suspensao">
+                                <span>Suspensão</span>
+                                <i data-lucide="chevron-down" class="svc-card-chevron w-5 h-5"></i>
+                            </button>
+                        </h3>
+                        <div class="svc-card-panel" id="painel-suspensao">
+                            <div class="svc-card-panel-inner">
+                                <ul class="flex flex-col gap-2 text-gray-400 text-sm leading-snug mb-6">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Amortecedores, molas, bandejas e pivôs
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Diagnóstico de ruídos e folgas
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Estabilidade e conforto recuperados
+                                    </li>
+                                </ul>
+                                <a href="https://wa.me/5534984304340?text=Ol%C3%A1!%20Quero%20um%20or%C3%A7amento%20de%20Suspens%C3%A3o."
+                                    target="_blank" rel="noopener"
+                                    class="led-ring mt-auto inline-flex items-center justify-center gap-2 rounded-full border border-brand-gold/40 text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-bold px-4 py-3 uppercase tracking-wide text-xs transition-colors">
+                                    Orçamento
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Pneus e Geometria -->
+                <article id="pneus" data-svc-card
+                    class="svc-card scroll-mt-28 reveal delay-100 group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
+                    <div class="aspect-[4/3] overflow-hidden relative">
+                        <img src="./midias/1781544150_ChatGPT-Image-15_06_2026--14_22_19.png" alt="Pneus e Geometria"
+                            loading="lazy" decoding="async"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-brand-card via-brand-card/20 to-transparent pointer-events-none">
+                        </div>
+                    </div>
+                    <div class="flex flex-col flex-grow p-6">
+                        <h3 class="font-heading text-xl font-bold text-white mb-4">
+                            <button type="button" class="svc-card-toggle" aria-expanded="true"
+                                aria-controls="painel-pneus">
+                                <span>Pneus e Geometria</span>
+                                <i data-lucide="chevron-down" class="svc-card-chevron w-5 h-5"></i>
+                            </button>
+                        </h3>
+                        <div class="svc-card-panel" id="painel-pneus">
+                            <div class="svc-card-panel-inner">
+                                <ul class="flex flex-col gap-2 text-gray-400 text-sm leading-snug mb-6">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Alinhamento 3D e balanceamento computadorizado
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        As melhores marcas do mercado
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Mais aderência e segurança para rodar
+                                    </li>
+                                </ul>
+                                <a href="https://wa.me/5534984304340?text=Ol%C3%A1!%20Quero%20um%20or%C3%A7amento%20de%20Pneus%20e%20Geometria."
+                                    target="_blank" rel="noopener"
+                                    class="led-ring mt-auto inline-flex items-center justify-center gap-2 rounded-full border border-brand-gold/40 text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-bold px-4 py-3 uppercase tracking-wide text-xs transition-colors">
+                                    Orçamento
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Revisão de Fábrica -->
+                <article id="revisao" data-svc-card
+                    class="svc-card scroll-mt-28 reveal delay-200 group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
+                    <div class="aspect-[4/3] overflow-hidden relative">
+                        <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_55.png" alt="Revisão de Fábrica"
+                            loading="lazy" decoding="async"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-brand-card via-brand-card/20 to-transparent pointer-events-none">
+                        </div>
+                    </div>
+                    <div class="flex flex-col flex-grow p-6">
+                        <h3 class="font-heading text-xl font-bold text-white mb-4">
+                            <button type="button" class="svc-card-toggle" aria-expanded="true"
+                                aria-controls="painel-revisao">
+                                <span>Revisão de Fábrica</span>
+                                <i data-lucide="chevron-down" class="svc-card-chevron w-5 h-5"></i>
+                            </button>
+                        </h3>
+                        <div class="svc-card-panel" id="painel-revisao">
+                            <div class="svc-card-panel-inner">
+                                <ul class="flex flex-col gap-2 text-gray-400 text-sm leading-snug mb-6">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Checklist conforme o manual da montadora
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Garantia do seu veículo preservada
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Peças e fluidos de alto padrão
+                                    </li>
+                                </ul>
+                                <a href="https://wa.me/5534984304340?text=Ol%C3%A1!%20Quero%20um%20or%C3%A7amento%20de%20Revis%C3%A3o%20de%20F%C3%A1brica."
+                                    target="_blank" rel="noopener"
+                                    class="led-ring mt-auto inline-flex items-center justify-center gap-2 rounded-full border border-brand-gold/40 text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-bold px-4 py-3 uppercase tracking-wide text-xs transition-colors">
+                                    Orçamento
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Financiamento de Veículo -->
+                <article id="financiamento" data-svc-card
+                    class="svc-card scroll-mt-28 reveal delay-300 group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
+                    <div class="aspect-[4/3] overflow-hidden relative">
+                        <img src="./midias/1781543741_ChatGPT-Image-15_06_2026--14_14_38.png"
+                            alt="Financiamento de Veículo" loading="lazy" decoding="async"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-brand-card via-brand-card/20 to-transparent pointer-events-none">
+                        </div>
+                    </div>
+                    <div class="flex flex-col flex-grow p-6">
+                        <h3 class="font-heading text-xl font-bold text-white mb-4">
+                            <button type="button" class="svc-card-toggle" aria-expanded="true"
+                                aria-controls="painel-financiamento">
+                                <span>Financiamento de Veículo</span>
+                                <i data-lucide="chevron-down" class="svc-card-chevron w-5 h-5"></i>
+                            </button>
+                        </h3>
+                        <div class="svc-card-panel" id="painel-financiamento">
+                            <div class="svc-card-panel-inner">
+                                <ul class="flex flex-col gap-2 text-gray-400 text-sm leading-snug mb-6">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Condições exclusivas e flexíveis
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Processo rápido e transparente
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        As melhores taxas do mercado
+                                    </li>
+                                </ul>
+                                <a href="https://wa.me/5534984304340?text=Ol%C3%A1!%20Quero%20saber%20mais%20sobre%20Financiamento%20de%20Ve%C3%ADculo."
+                                    target="_blank" rel="noopener"
+                                    class="led-ring mt-auto inline-flex items-center justify-center gap-2 rounded-full border border-brand-gold/40 text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-bold px-4 py-3 uppercase tracking-wide text-xs transition-colors">
+                                    Saiba mais
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
         </div>
     </section>
 
-    <!-- DOBRA 4: SUSPENSÃO E FREIOS -->
-    <section class="py-24 bg-brand-dark relative border-t border-white/5 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col gap-24 lg:gap-32">
-            
-            <!-- Serviço 5: Suspensão -->
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-                <!-- Imagem -->
-                <div class="w-full lg:w-1/2 reveal relative">
-                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
-                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
-                        <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_49.png" alt="Suspensão" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
-                    </div>
-                    <!-- Ícone Sobreposto -->
-                    <img src="./icones/Suspensão.png" alt="Icone Suspensão" class="absolute -bottom-8 right-4 lg:top-1/2 lg:-translate-y-1/2 lg:-right-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
-                </div>
-                <!-- Conteúdo -->
-                <div class="w-full lg:w-1/2 reveal flex flex-col items-start text-left mt-6 lg:mt-0 lg:pl-12">
-                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Suspensão</h3>
-                    <p class="text-gray-400 leading-relaxed text-lg">Diagnóstico minucioso de amortecedores, molas, bandejas e pivôs. Identificamos e corrigimos desgastes para devolver a estabilidade e o conforto de um carro recém saído da concessionária.</p>
-                </div>
-            </div>
-
-            <!-- Serviço 6: Freios -->
-            <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16">
-                <!-- Imagem -->
-                <div class="w-full lg:w-1/2 reveal delay-100 relative">
-                    <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-brand-gold/10 relative group">
-                        <div class="absolute inset-0 bg-brand-gold/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
-                        <img src="./midias/1781544394_ChatGPT-Image-15_06_2026--14_26_25.png" alt="Freios" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 relative z-0">
-                    </div>
-                    <!-- Ícone Sobreposto -->
-                    <img src="./icones/Freios.png" alt="Icone Freios" class="absolute -bottom-8 left-4 lg:top-1/2 lg:-translate-y-1/2 lg:-left-16 z-20 h-28 md:h-32 lg:h-40 w-auto object-contain drop-shadow-2xl hover:scale-110 transition-transform">
-                </div>
-                <!-- Conteúdo -->
-                <div class="w-full lg:w-1/2 reveal delay-100 flex flex-col items-start text-left mt-6 lg:mt-0 lg:pr-12">
-                    <h3 class="font-heading text-3xl lg:text-4xl font-bold text-white mb-4">Sistemas de Freios</h3>
-                    <p class="text-gray-400 leading-relaxed text-lg">Sua segurança não pode esperar. Revisão completa de pastilhas, discos, fluidos e sistema ABS, utilizando tecnologias de ponta e peças com os mais altos padrões de qualidade.</p>
-                </div>
-            </div>
-
-        </div>
-    </section>
+    <!-- Divisória LED -->
+    <div class="led-divider" style="--led-delay: -1.2s" aria-hidden="true"></div>
 
     <!-- DOBRA ELÉTRICOS -->
-    <section class="py-24 bg-gradient-to-r from-[#8195AA] to-[#5D738A] relative overflow-hidden">
+    <section class="py-24 lg:py-32 tx-grid bg-brand-dark relative overflow-hidden">
+
+        <!-- Halos dourados no lugar do antigo fundo azul chapado -->
+        <div
+            class="absolute -right-40 top-1/2 -translate-y-1/2 w-[720px] h-[720px] bg-brand-gold/12 rounded-full blur-[130px] pointer-events-none">
+        </div>
+        <div
+            class="absolute right-10 top-1/2 -translate-y-1/2 w-[380px] h-[380px] bg-brand-goldLight/10 rounded-full blur-[100px] pointer-events-none">
+        </div>
+
         <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-            
+
             <!-- Conteúdo (Esquerda) -->
-            <div class="w-full lg:w-1/2 reveal flex flex-col items-start text-left text-white">
-                <div class="w-16 h-16 mb-8 bg-white/20 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center shadow-xl">
-                    <i data-lucide="zap" class="w-8 h-8 text-white"></i>
-                </div>
-                <h2 class="font-heading text-3xl md:text-5xl font-bold mb-6 drop-shadow-md leading-tight">
-                    Diagnóstico e Mecânica em Carro Elétrico
+            <div
+                class="w-full lg:w-1/2 reveal flex flex-col items-center text-center lg:items-start lg:text-left">
+                <span
+                    class="inline-flex items-center justify-center rounded-full border border-brand-gold/40 bg-brand-gold/10 px-3.5 pt-[7px] pb-[6px] text-brand-gold font-semibold tracking-widest uppercase text-[10px] sm:text-xs leading-none mb-5 backdrop-blur-sm">
+                    Elétricos e Híbridos
+                </span>
+
+                <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-5 leading-tight">
+                    Diagnóstico e mecânica em <span class="text-gradient-gold">carro elétrico.</span>
                 </h2>
-                <p class="text-white/90 text-lg md:text-xl font-medium leading-relaxed drop-shadow-sm">
-                    Realizamos diagnóstico avançado e manutenções em veículos elétricos e híbridos. Tecnologia e know-how de ponta para a nova era automotiva.
+
+                <p class="text-gray-400 text-lg leading-relaxed mb-8">
+                    A nova era automotiva já chegou à oficina. Atendemos veículos elétricos e híbridos com
+                    diagnóstico avançado — e com a mesma transparência de orçamento de sempre.
                 </p>
+
+                <ul class="flex flex-col gap-5 mb-9 w-full text-left">
+                    <li class="flex items-start gap-4">
+                        <span
+                            class="shrink-0 w-11 h-11 rounded-full bg-brand-gold/10 border border-brand-gold/25 flex items-center justify-center">
+                            <i data-lucide="battery-charging" class="w-5 h-5 text-brand-gold"></i>
+                        </span>
+                        <span>
+                            <strong class="block text-white font-semibold mb-0.5">Elétricos e híbridos</strong>
+                            <span class="text-gray-400 leading-relaxed">Atendimento para as duas tecnologias, do
+                                diagnóstico à manutenção.</span>
+                        </span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span
+                            class="shrink-0 w-11 h-11 rounded-full bg-brand-gold/10 border border-brand-gold/25 flex items-center justify-center">
+                            <i data-lucide="cpu" class="w-5 h-5 text-brand-gold"></i>
+                        </span>
+                        <span>
+                            <strong class="block text-white font-semibold mb-0.5">Diagnóstico computadorizado</strong>
+                            <span class="text-gray-400 leading-relaxed">Leitura eletrônica avançada para identificar a
+                                falha com precisão, sem chute.</span>
+                        </span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span
+                            class="shrink-0 w-11 h-11 rounded-full bg-brand-gold/10 border border-brand-gold/25 flex items-center justify-center">
+                            <i data-lucide="wrench" class="w-5 h-5 text-brand-gold"></i>
+                        </span>
+                        <span>
+                            <strong class="block text-white font-semibold mb-0.5">A mecânica que todo elétrico ainda
+                                precisa</strong>
+                            <span class="text-gray-400 leading-relaxed">Freios, suspensão, pneus e geometria continuam
+                                exigindo revisão — e são a nossa especialidade.</span>
+                        </span>
+                    </li>
+                </ul>
+
             </div>
 
             <!-- Imagem (Direita) -->
             <div class="w-full lg:w-1/2 reveal delay-100">
-                <div class="aspect-[4/3] lg:aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/20 relative group">
-                    <img src="./midias/1781544553_PC-SEAL-SPEC.webp" alt="Carro Elétrico BYD Seal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                <div
+                    class="shimmer aspect-[4/3] lg:aspect-video rounded-3xl overflow-hidden shadow-2xl shadow-brand-gold/20 border border-brand-gold/25 relative group">
+
+                    <!-- A foto original é um render de tom frio: o .gold-photo
+                         reaquece a imagem e as camadas abaixo terminam de
+                         puxá-la para o dourado. -->
+                    <img src="./midias/1781544553_PC-SEAL-SPEC.webp" alt="Diagnóstico em veículo elétrico"
+                        loading="lazy" decoding="async"
+                        class="gold-photo w-full h-full object-cover group-hover:scale-105">
+
+                    <!-- Tingimento dourado -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-tr from-brand-goldDark/35 via-brand-gold/15 to-brand-goldLight/25 mix-blend-overlay pointer-events-none">
+                    </div>
+                    <!-- Luz quente entrando pelo canto superior direito -->
+                    <div
+                        class="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,_rgba(255,246,226,0.45)_0%,_rgba(232,197,125,0.18)_28%,_transparent_60%)] mix-blend-screen pointer-events-none">
+                    </div>
+                    <!-- Vinheta escura para o dourado não estourar as bordas -->
+                    <div
+                        class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_45%,_rgba(28,28,30,0.55)_100%)] pointer-events-none">
+                    </div>
+
+                    <!-- Glints dourados, cada um com seu tempo -->
+                    <span class="sparkle" style="top: 22%; left: 62%; animation-delay: 0s" aria-hidden="true"></span>
+                    <span class="sparkle" style="top: 58%; left: 34%; --sparkle-size: 10px; animation-delay: 1.3s"
+                        aria-hidden="true"></span>
+                    <span class="sparkle" style="top: 71%; left: 78%; --sparkle-size: 18px; animation-delay: 2.4s"
+                        aria-hidden="true"></span>
+                    <span class="sparkle" style="top: 38%; left: 88%; --sparkle-size: 9px; animation-delay: 3.2s"
+                        aria-hidden="true"></span>
                 </div>
             </div>
 
         </div>
-    </section>
 
-    <!-- DOBRA 4: OFERTA DIRETA E AGENDAMENTO -->
-    <section id="agendamento" class="py-24 relative overflow-hidden bg-brand-dark">
-        <div class="absolute inset-0 bg-brand-card"></div>
-        <div
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-gold/5 rounded-full blur-3xl pointer-events-none">
-        </div>
-
-        <div class="relative z-10 max-w-4xl mx-auto px-6 text-center reveal">
-            <h2 class="font-heading text-3xl md:text-5xl font-bold text-white mb-10 leading-tight">Pare de adiar a
-                manutenção do seu veículo.<br><span class="text-gradient-gold">Traga seu carro para a Rede Prime Auto
-                    Center.</span></h2>
-
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="https://wa.me/5534984304340" target="_blank"
-                    class="btn-premium w-full sm:w-auto bg-brand-gold text-brand-dark font-bold px-8 py-4 rounded text-center uppercase tracking-wide text-sm flex items-center justify-center gap-2">
-                    <i data-lucide="message-circle" class="w-5 h-5"></i>
-                    Falar com Especialista
-                </a>
-            </div>
+        <!-- CTA abaixo do carro, centralizado -->
+        <div class="max-w-7xl mx-auto px-6 relative z-10 mt-10 lg:mt-14 flex justify-center reveal">
+            <a href="https://wa.me/5534984304340?text=Ol%C3%A1!%20Tenho%20um%20carro%20el%C3%A9trico%2Fh%C3%ADbrido%20e%20quero%20falar%20com%20a%20oficina."
+                target="_blank" rel="noopener"
+                class="btn-premium led-ring inline-flex w-full sm:w-auto items-center justify-center gap-2.5 bg-brand-gold text-brand-dark font-bold px-8 py-4 rounded-full uppercase tracking-wide text-sm">
+                Falar sobre meu elétrico
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
         </div>
     </section>
+
+    <!-- Divisória LED -->
+    <div class="led-divider" style="--led-delay: -2.4s" aria-hidden="true"></div>
 
     <!-- SIGA NO INSTAGRAM -->
-    <section class="py-24 bg-[#141416] border-t border-white/5">
-        <div class="max-w-7xl mx-auto px-6 reveal">
-            <div class="text-center mb-12">
-                <h2 class="font-heading text-3xl md:text-4xl font-bold text-white mb-4 flex items-center justify-center gap-3">
-                    <i data-lucide="instagram" class="w-8 h-8 text-brand-gold"></i> Siga no Instagram
+    <section class="py-16 lg:py-24 tx-carbon bg-[#141416]">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <!-- Cabeçalho no padrão do site: badge, título, subtítulo -->
+            <div class="max-w-2xl mx-auto text-center mb-12 reveal">
+                <span
+                    class="inline-flex items-center justify-center rounded-full border border-brand-gold/40 bg-brand-gold/10 px-3.5 pt-[7px] pb-[6px] text-brand-gold font-semibold tracking-widest uppercase text-[10px] sm:text-xs leading-none mb-5 backdrop-blur-sm">
+                    Instagram
+                </span>
+                <h2 class="font-heading text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
+                    Os bastidores do <span class="text-gradient-gold">alto padrão.</span>
                 </h2>
-                <p class="text-gray-400 text-lg">Acompanhe nosso dia a dia, dicas e os bastidores do alto padrão.</p>
-                <a href="https://www.instagram.com/redeprimeautocenter" target="_blank" class="text-brand-gold text-sm font-medium hover:text-white transition-colors mt-2 inline-flex items-center gap-1">
-                    @redeprimeautocenter <i data-lucide="external-link" class="w-3 h-3"></i>
-                </a>
+                <p class="text-gray-400 text-lg leading-relaxed">
+                    Acompanhe o dia a dia da oficina, dicas de manutenção e o que acontece por dentro da estrutura.
+                </p>
             </div>
-            <div class="flex flex-col md:flex-row justify-center gap-8 items-center">
-                <!-- Post 1 -->
-                <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbDZs0IzUVf/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/reel/DbDZs0IzUVf/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">Ver esta publicação no Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a></div></blockquote>
-                <!-- Post 2 -->
-                <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/Da0pNDOxcLP/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/reel/Da0pNDOxcLP/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">Ver esta publicação no Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a></div></blockquote>
-                <script async src="//www.instagram.com/embed.js"></script>
+
+            <div class="ig-showcase flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-10">
+
+                <!-- Esquerda: os dois reels, com capas recortadas dos prints -->
+                <div class="w-full max-w-[400px] flex flex-col gap-5 reveal">
+
+                    <a href="https://www.instagram.com/reel/DbDZs0IzUVf/" target="_blank" rel="noopener"
+                        class="ig-reel group">
+                        <img src="./midias/reel-elevador-vans.jpg" alt="Elevador exclusivo para vans" loading="lazy"
+                            decoding="async">
+                        <span class="ig-reel-veil"></span>
+                        <span class="ig-reel-play"><i data-lucide="play" class="w-5 h-5"></i></span>
+                        <span class="ig-reel-info">
+                            <strong>Elevador exclusivo para vans</strong>
+                            <span class="ig-reel-link">
+                                Ver no Instagram <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                            </span>
+                        </span>
+                    </a>
+
+                    <a href="https://www.instagram.com/reel/Da0pNDOxcLP/" target="_blank" rel="noopener"
+                        class="ig-reel group">
+                        <img src="./midias/reel-estrutura.jpg" alt="Estrutura da oficina Rede Prime Auto Center"
+                            loading="lazy" decoding="async">
+                        <span class="ig-reel-veil"></span>
+                        <span class="ig-reel-play"><i data-lucide="play" class="w-5 h-5"></i></span>
+                        <span class="ig-reel-info">
+                            <strong>Por dentro da nossa estrutura</strong>
+                            <span class="ig-reel-link">
+                                Ver no Instagram <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                            </span>
+                        </span>
+                    </a>
+
+                </div>
+
+                <!-- Direita: simulador de iPhone com o perfil rolável -->
+                <div class="ig-phone reveal delay-100">
+                    <div class="ig-phone-screen">
+                        <div class="ig-phone-island"></div>
+                        <div class="ig-phone-scroll">
+                            <img src="./midias/ig-perfil-topo.jpg"
+                                alt="Perfil da Rede Prime Auto Center no Instagram" loading="lazy" decoding="async">
+                            <img src="./midias/ig-perfil-grid.jpg"
+                                alt="Publicações da Rede Prime Auto Center no Instagram" loading="lazy"
+                                decoding="async">
+                        </div>
+                        <div class="ig-phone-fade"></div>
+                        <div class="ig-phone-home"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CTA do perfil, centralizado abaixo de tudo -->
+            <div class="mt-12 lg:mt-14 flex justify-center reveal">
+                <a href="https://www.instagram.com/redeprimeautocenter" target="_blank" rel="noopener"
+                    class="btn-premium led-ring inline-flex items-center justify-center bg-brand-gold text-brand-dark font-bold px-8 py-4 rounded-full tracking-wide text-sm leading-none">
+                    @redeprimeautocenter
+                </a>
             </div>
         </div>
     </section>
 
+    <!-- Divisória LED -->
+    <div class="led-divider" style="--led-delay: -3.6s" aria-hidden="true"></div>
+
     <!-- ONDE ESTAMOS -->
-    <section class="py-24 bg-brand-dark border-t border-white/5">
+    <section class="py-16 lg:py-20 tx-carbon bg-brand-dark">
         <div class="max-w-7xl mx-auto px-6 reveal">
-            <div class="text-center mb-12">
-                <h2 class="font-heading text-3xl md:text-4xl font-bold text-white mb-4">Onde Estamos</h2>
-                <p class="text-gray-400 text-lg">Nossa estrutura premium de ponta a ponta, pronta para receber você e
-                    seu veículo.</p>
+            <div class="max-w-2xl mx-auto text-center mb-10 lg:mb-12">
+                <span
+                    class="inline-flex items-center justify-center rounded-full border border-brand-gold/40 bg-brand-gold/10 px-3.5 pt-[7px] pb-[6px] text-brand-gold font-semibold tracking-widest uppercase text-[10px] sm:text-xs leading-none mb-5 backdrop-blur-sm">
+                    Localização
+                </span>
+                <h2 class="font-heading text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
+                    Onde <span class="text-gradient-gold">estamos.</span>
+                </h2>
+                <p class="text-gray-400 text-lg leading-relaxed">
+                    Nossa estrutura premium de ponta a ponta, pronta para receber você e seu veículo.
+                </p>
             </div>
-            <div class="w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+            <div
+                class="max-w-3xl mx-auto h-[260px] md:h-[320px] rounded-3xl overflow-hidden border border-brand-gold/20 shadow-2xl shadow-black/50">
                 <iframe
                     src="https://maps.google.com/maps?q=Av.+Sacadura+Cabral,+1040+-+Alto+Umuarama+-+Uberl%C3%A2ndia&t=&z=16&ie=UTF8&iwloc=B&output=embed"
                     width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
@@ -468,69 +1835,116 @@
         </div>
     </section>
 
+    <!-- Divisória LED -->
+    <div class="led-divider" style="--led-delay: -4.8s" aria-hidden="true"></div>
+
+    <!-- DOBRA FINAL: OFERTA DIRETA E AGENDAMENTO -->
+    <section id="agendamento" class="py-24 relative overflow-hidden bg-brand-dark">
+        <div class="absolute inset-0 tx-carbon bg-brand-card"></div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-gold/5 rounded-full blur-3xl pointer-events-none">
+        </div>
+
+        <div class="relative z-10 max-w-4xl mx-auto px-6 text-center reveal">
+            <!-- No mobile a fonte cai e a quebra forçada entre as frases sai:
+                 no texto grande em coluna estreita ela custava linhas demais. -->
+            <h2
+                class="font-heading text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-8 md:mb-10 leading-snug md:leading-tight">
+                Pare de adiar a manutenção do seu veículo.<br class="hidden sm:block">
+                <span class="text-gradient-gold">Traga seu carro para a Rede Prime Auto Center.</span>
+            </h2>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="https://wa.me/5534984304340" target="_blank"
+                    class="btn-premium led-ring w-full sm:w-auto bg-brand-gold text-brand-dark font-bold px-8 py-4 rounded-full text-center uppercase tracking-wide text-sm flex items-center justify-center gap-2">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    Falar com Especialista
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Divisória LED -->
+    <div class="led-divider" style="--led-delay: -6s" aria-hidden="true"></div>
+
     <!-- DOBRA 5: RODAPÉ E LOCALIZAÇÃO -->
-    <footer class="bg-brand-dark border-t border-white/10 pt-16 pb-8">
+    <footer class="tx-plate bg-brand-dark pt-12 md:pt-16 pb-8">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16 reveal">
+            <!-- No mobile o rodapé é minimalista: tudo centralizado, sem os
+                 títulos de coluna e com os horários numa linha só. -->
+            <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-16 reveal text-center md:text-left">
 
                 <!-- Col 1: Marca e Intro -->
                 <div class="lg:col-span-1">
                     <img src="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png"
-                        alt="Rede Prime Auto Center Logo" class="h-12 w-auto object-contain mb-6 drop-shadow-lg">
-                    <p class="text-gray-500 text-sm leading-relaxed mb-6">
+                        alt="Rede Prime Auto Center Logo"
+                        class="h-10 md:h-12 w-auto object-contain mx-auto md:mx-0 mb-0 md:mb-6 drop-shadow-lg">
+                    <p class="hidden md:block text-gray-500 text-sm leading-relaxed mb-6">
                         O nível de excelência, tecnologia e precisão que o seu veículo exige, agora em Uberlândia.
                     </p>
                 </div>
 
                 <!-- Col 2: Endereço -->
                 <div>
-                    <h4 class="text-white font-heading font-bold mb-6 flex items-center gap-2">
+                    <h4 class="hidden md:flex text-white font-heading font-bold mb-6 items-center gap-2">
                         <i data-lucide="map-pin" class="w-5 h-5 text-brand-gold"></i> Localização
                     </h4>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                    <p class="text-gray-400 text-sm leading-relaxed mb-3 md:mb-4">
                         Av. Sacadura Cabral,1040<br>
                         Alto Umuarama, Uberlândia<br>
-                        CEP: 38400-000
+                        <span class="hidden md:inline">CEP: 38400-000</span>
                     </p>
                     <a href="https://maps.google.com/?q=Av.+Sacadura+Cabral,+1040+-+Alto+Umuarama+-+Uberlândia" target="_blank"
-                        class="text-brand-gold text-sm font-medium hover:text-white transition-colors flex items-center gap-1">
+                        class="text-brand-gold text-sm font-medium hover:text-white transition-colors flex items-center justify-center md:justify-start gap-1">
                         Como Chegar (Google Maps) <i data-lucide="external-link" class="w-3 h-3"></i>
                     </a>
                 </div>
 
                 <!-- Col 3: Horários -->
                 <div>
-                    <h4 class="text-white font-heading font-bold mb-6 flex items-center gap-2">
+                    <h4 class="hidden md:flex text-white font-heading font-bold mb-6 items-center gap-2">
                         <i data-lucide="clock" class="w-5 h-5 text-brand-gold"></i> Horário
                     </h4>
-                    <ul class="text-gray-400 text-sm space-y-2">
-                        <li class="flex justify-between"><span>Seg - Sex:</span> <span>07:30 - 18:00</span></li>
-                        <li class="flex justify-between"><span>Sábado:</span> <span>08:00 - 12:00</span></li>
-                        <li class="flex justify-between text-gray-600"><span>Domingo:</span> <span>Fechado</span></li>
+                    <!-- mobile: os três horários fluem numa linha; desktop: uma
+                         linha para cada, com o horário alinhado à direita -->
+                    <ul
+                        class="text-gray-400 text-sm flex flex-wrap justify-center gap-x-4 gap-y-1 md:block md:space-y-2">
+                        <li class="flex items-center gap-1.5 md:justify-between md:gap-0"><span>Seg - Sex:</span>
+                            <span>07:30 - 18:00</span>
+                        </li>
+                        <li class="flex items-center gap-1.5 md:justify-between md:gap-0"><span>Sábado:</span>
+                            <span>08:00 - 12:00</span>
+                        </li>
+                        <li
+                            class="hidden md:flex items-center gap-1.5 md:justify-between md:gap-0 text-gray-600">
+                            <span>Domingo:</span> <span>Fechado</span>
+                        </li>
                     </ul>
                 </div>
 
                 <!-- Col 4: Contato -->
                 <div>
-                    <h4 class="text-white font-heading font-bold mb-6 flex items-center gap-2">
+                    <h4 class="hidden md:flex text-white font-heading font-bold mb-6 items-center gap-2">
                         <i data-lucide="phone" class="w-5 h-5 text-brand-gold"></i> Contato
                     </h4>
-                    <ul class="text-gray-400 text-sm space-y-3">
+                    <ul class="text-gray-400 text-sm space-y-2 md:space-y-3">
                         <li>
                             <a href="https://wa.me/5534984304340" target="_blank"
                                 class="hover:text-brand-gold transition-colors block">
                                 +55 34 98430-4340
                             </a>
                         </li>
-                        <li>
+                        <!-- no mobile o e-mail é longo e pouco usado: fica só no desktop -->
+                        <li class="hidden md:block">
                             <a href="mailto:atendimento@redeprimeautocenter.com"
                                 class="hover:text-brand-gold transition-colors block">
                                 atendimento@redeprimeautocenter.com
                             </a>
                         </li>
-                        <li class="pt-4">
+                        <li class="pt-2 md:pt-4 flex justify-center md:block">
                             <a href="https://www.instagram.com/redeprimeautocenter" target="_blank"
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-[#262629] border border-white/10 rounded hover:border-brand-gold text-gray-400 hover:text-brand-gold transition-all">
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-[#262629] border border-white/10 rounded-full hover:border-brand-gold text-gray-400 hover:text-brand-gold transition-all">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                 <span>Instagram</span>
                             </a>
@@ -554,17 +1968,111 @@
         lucide.createIcons();
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Controle da Barra Fixa (Header) no Scroll
+            // Controle da Barra Fixa (Header)
             const header = document.getElementById('main-header');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 100) {
+            const scrollHint = document.getElementById('scroll-hint');
+            const menuToggle = document.getElementById('menu-toggle');
+            const menu = document.getElementById('menu-mobile');
+
+            const noMobile = () => window.matchMedia('(max-width: 1023px)').matches;
+
+            // No desktop a barra entra depois de 100px de rolagem. No mobile ela
+            // já nasce visível — quem está no celular precisa do menu à mão, e
+            // o CSS a esconde sozinho enquanto a abertura do hero roda.
+            const atualizarHeader = () => {
+                if (noMobile() || window.scrollY > 100) {
                     header.classList.add('translate-y-0', 'opacity-100');
                     header.classList.remove('-translate-y-full', 'opacity-0');
                 } else {
                     header.classList.add('-translate-y-full', 'opacity-0');
                     header.classList.remove('translate-y-0', 'opacity-100');
                 }
+            };
+
+            atualizarHeader();
+            window.addEventListener('resize', atualizarHeader);
+
+            window.addEventListener('scroll', () => {
+                atualizarHeader();
+                // a seta cumpriu o papel assim que a rolagem começa
+                if (scrollHint) scrollHint.classList.toggle('is-hidden', window.scrollY > 60);
             });
+
+            // --- Menu mobile ---
+            if (menuToggle && menu) {
+                const fecharMenu = () => {
+                    menu.classList.remove('is-open');
+                    menuToggle.setAttribute('aria-expanded', 'false');
+                    menuToggle.setAttribute('aria-label', 'Abrir menu');
+                };
+
+                menuToggle.addEventListener('click', () => {
+                    const aberto = menu.classList.toggle('is-open');
+                    menuToggle.setAttribute('aria-expanded', String(aberto));
+                    menuToggle.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
+                });
+
+                // clicou num destino: o menu já cumpriu o papel
+                menu.querySelectorAll('.menu-link').forEach(link => {
+                    link.addEventListener('click', fecharMenu);
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') fecharMenu();
+                });
+
+                // clique fora fecha
+                document.addEventListener('click', (e) => {
+                    if (!menu.contains(e.target) && !menuToggle.contains(e.target)) fecharMenu();
+                });
+
+                // voltou para o desktop com o menu aberto
+                window.addEventListener('resize', () => {
+                    if (!noMobile()) fecharMenu();
+                });
+            }
+
+            // --- Cards de serviço em acordeão (só no celular) ---
+            const svcCards = Array.from(document.querySelectorAll('[data-svc-card]'));
+            if (svcCards.length) {
+                const mqCelular = window.matchMedia('(max-width: 639px)');
+
+                const definir = (card, aberto) => {
+                    card.classList.toggle('is-open', aberto);
+                    const btn = card.querySelector('.svc-card-toggle');
+                    if (btn) btn.setAttribute('aria-expanded', String(aberto));
+                };
+
+                const sincronizar = () => {
+                    if (mqCelular.matches) {
+                        // o primeiro já entra aberto, para o acordeão se explicar sozinho
+                        svcCards.forEach((card, i) => definir(card, i === 0));
+                    } else {
+                        // no desktop está tudo visível: o aria precisa dizer isso
+                        svcCards.forEach(card => definir(card, true));
+                        svcCards.forEach(card => card.classList.remove('is-open'));
+                    }
+                };
+
+                // O clique é escutado no card inteiro (foto, título, área vazia).
+                // O clique no botão do título borbulha até aqui, então um único
+                // listener por card basta e não há risco de alternar duas vezes.
+                svcCards.forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        if (!mqCelular.matches) return;
+                        // deixa os links funcionarem (o CTA de orçamento)
+                        if (e.target.closest('a')) return;
+
+                        const abrindo = !card.classList.contains('is-open');
+                        // abrir um fecha os outros
+                        svcCards.forEach(c => definir(c, false));
+                        if (abrindo) definir(card, true);
+                    });
+                });
+
+                sincronizar();
+                mqCelular.addEventListener('change', sincronizar);
+            }
 
             const observerOptions = {
                 root: null,
@@ -588,13 +2096,212 @@
 
     <!-- WhatsApp Fixo -->
     <a href="https://wa.me/5534984304340" target="_blank"
-        class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center"
+        class="shimmer led-ring fixed bottom-6 right-6 z-50 bg-gold-gradient text-brand-dark p-4 rounded-full shadow-lg shadow-brand-gold/30 hover:scale-110 transition-transform flex items-center justify-center"
         aria-label="Falar no WhatsApp">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
             <path
                 d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
         </svg>
     </a>
+
+    <!-- Fim da abertura do hero no mobile: o vídeo sai e entra o hero normal -->
+    <script>
+        (function () {
+            const html = document.documentElement;
+            const video = document.getElementById('hero-video');
+            // a classe é posta pelo script do <head>; se não está lá, não há
+            // abertura a encerrar (desktop, movimento reduzido ou sem JS)
+            if (!video || !html.classList.contains('hero-intro')) return;
+
+            // O arquivo já foi cortado em 5s (o carro assenta em ~4,6s), então
+            // o 'ended' cai no ponto certo. Para cortar mais cedo ainda, troque
+            // null por um número de segundos.
+            const ENCERRAR_EM = null;
+
+            let encerrado = false;
+            const encerrar = () => {
+                if (encerrado) return;
+                encerrado = true;
+                html.classList.remove('hero-intro');
+                // o vídeo já saiu de cena: para de consumir CPU e bateria
+                setTimeout(() => {
+                    try { video.pause(); } catch (e) { }
+                }, 900);
+            };
+
+            // Página aberta já rolada (recarregar preserva a posição): não faz
+            // sentido cobrir a tela com a abertura.
+            if (window.scrollY > 40) { encerrar(); return; }
+
+            // O atributo autoplay já tenta tocar; o play() explícito cobre os
+            // navegadores que engolem o autoplay, e o catch pega o bloqueio
+            // (modo de economia de bateria do iOS, por exemplo).
+            const p = video.play();
+            if (p && p.catch) p.catch(encerrar);
+
+            if (ENCERRAR_EM === null) {
+                video.addEventListener('ended', encerrar);
+            } else {
+                video.addEventListener('timeupdate', () => {
+                    if (video.currentTime >= ENCERRAR_EM) encerrar();
+                });
+            }
+
+            // --- redes de segurança: o hero nunca fica preso atrás do vídeo ---
+
+            // vídeo falhou ao carregar
+            video.addEventListener('error', encerrar);
+
+            // Rolagem DE VERDADE encerra a abertura. O atraso e o limiar de
+            // 40px são essenciais: no celular a barra de endereço recolhendo
+            // dispara 'scroll' sozinha logo após o load, sem o usuário tocar
+            // em nada — era isso que matava a abertura antes de começar.
+            setTimeout(() => {
+                if (encerrado) return;
+                const aoRolar = () => {
+                    if (window.scrollY > 40) {
+                        window.removeEventListener('scroll', aoRolar);
+                        encerrar();
+                    }
+                };
+                window.addEventListener('scroll', aoRolar, { passive: true });
+            }, 1200);
+
+            // se em 3s a reprodução não avançou um quadro sequer, não vale
+            // segurar o visitante esperando
+            setTimeout(() => {
+                if (!video.currentTime) encerrar();
+            }, 3000);
+
+            // teto absoluto (5s de vídeo + folga)
+            setTimeout(encerrar, 8000);
+        })();
+    </script>
+
+    <!-- Cursor personalizado com rastro dourado -->
+    <script>
+        (function () {
+            const fine = window.matchMedia('(pointer: fine)');
+            const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+            // Sem mouse (celular/tablet) ou com movimento reduzido: nem monta.
+            if (!fine.matches || calm.matches) return;
+
+            const html = document.documentElement;
+            const canvas = document.createElement('canvas');
+            canvas.id = 'cursor-trail';
+            const dot = document.createElement('div');
+            dot.id = 'cursor-dot';
+            dot.className = 'cursor-el';
+            const ring = document.createElement('div');
+            ring.id = 'cursor-ring';
+            ring.className = 'cursor-el';
+            document.body.append(canvas, dot, ring);
+            html.classList.add('has-custom-cursor');
+
+            const ctx = canvas.getContext('2d');
+            let dpr = 1, w = 0, h = 0;
+
+            function resize() {
+                dpr = Math.min(window.devicePixelRatio || 1, 2);
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            // Posição real do mouse, posição do anel (com atraso) e o rastro
+            let mx = -100, my = -100, rx = -100, ry = -100;
+            const LIFE = 550;   // ms até o rastro sumir por completo
+            const MAX = 26;     // pontos guardados
+            const trail = [];
+            let started = false;
+
+            window.addEventListener('mousemove', (e) => {
+                mx = e.clientX;
+                my = e.clientY;
+                if (!started) {
+                    started = true;
+                    rx = mx; ry = my;
+                    dot.classList.add('is-visible');
+                    ring.classList.add('is-visible');
+                }
+                trail.push({ x: mx, y: my, t: performance.now() });
+                if (trail.length > MAX) trail.shift();
+            });
+
+            // Some quando o mouse sai da janela
+            document.addEventListener('mouseleave', () => {
+                dot.classList.remove('is-visible');
+                ring.classList.remove('is-visible');
+            });
+            document.addEventListener('mouseenter', () => {
+                if (started) {
+                    dot.classList.add('is-visible');
+                    ring.classList.add('is-visible');
+                }
+            });
+
+            // Estado do anel sobre elementos clicáveis
+            const HOVERABLE = 'a, button, [role="button"], input, select, textarea, iframe';
+            document.addEventListener('mouseover', (e) => {
+                if (e.target.closest && e.target.closest(HOVERABLE)) ring.classList.add('is-hover');
+            });
+            document.addEventListener('mouseout', (e) => {
+                if (e.target.closest && e.target.closest(HOVERABLE)) ring.classList.remove('is-hover');
+            });
+            document.addEventListener('mousedown', () => ring.classList.add('is-down'));
+            document.addEventListener('mouseup', () => ring.classList.remove('is-down'));
+
+            function frame() {
+                const now = performance.now();
+
+                // descarta os pontos que já apagaram
+                while (trail.length && now - trail[0].t > LIFE) trail.shift();
+
+                ctx.clearRect(0, 0, w, h);
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // Cada segmento é desenhado duas vezes: um traço largo e
+                // translúcido (o brilho) e um fino e claro (o filamento).
+                // Sai mais barato que shadowBlur e o resultado é parecido.
+                for (let i = 1; i < trail.length; i++) {
+                    const p0 = trail[i - 1], p1 = trail[i];
+                    const life = 1 - (now - p1.t) / LIFE;   // 1 = novo, 0 = apagado
+                    if (life <= 0) continue;
+                    const fade = life * life;               // apaga mais rápido no fim
+
+                    ctx.strokeStyle = 'rgba(194, 155, 87, ' + (fade * 0.28) + ')';
+                    ctx.lineWidth = 11 * life;
+                    ctx.beginPath();
+                    ctx.moveTo(p0.x, p0.y);
+                    ctx.lineTo(p1.x, p1.y);
+                    ctx.stroke();
+
+                    ctx.strokeStyle = 'rgba(232, 197, 125, ' + (fade * 0.85) + ')';
+                    ctx.lineWidth = 3.2 * life;
+                    ctx.beginPath();
+                    ctx.moveTo(p0.x, p0.y);
+                    ctx.lineTo(p1.x, p1.y);
+                    ctx.stroke();
+                }
+
+                // ponto acompanha na hora, anel vem atrasado (efeito elástico)
+                rx += (mx - rx) * 0.18;
+                ry += (my - ry) * 0.18;
+                dot.style.transform = 'translate(' + mx + 'px,' + my + 'px)';
+                ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
+
+                requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame);
+        })();
+    </script>
 </body>
 
 </html>
