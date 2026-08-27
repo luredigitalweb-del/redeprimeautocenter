@@ -1262,15 +1262,30 @@
                 <img src="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png" alt=""
                     aria-hidden="true" class="hero-intro-logo">
 
+                <!-- O poster evita o botão de play do iOS quando o autoplay é
+                     bloqueado (Modo de Baixo Consumo, por exemplo): em vez de um
+                     controle quebrado, aparece um quadro real do carro. -->
                 <video id="hero-video" autoplay muted playsinline preload="auto"
+                    poster="./midias/hero-poster.jpg"
                     class="w-full h-full object-cover object-center">
-                    <!-- No celular a faixa do vídeo tem ~390px: 640x360 basta e
-                         pesa 1/5, o que faz a abertura começar em vez de estourar
-                         o tempo de espera na primeira visita em rede móvel. -->
-                    <source src="./midias/hero-intro-mobile.mp4" type="video/mp4" media="(max-width: 1023px)">
-                    <source src="./midias/hero-intro.mp4" type="video/mp4">
                     Seu navegador não suporta a reprodução de vídeos.
                 </video>
+                <script>
+                    // A fonte do celular é escolhida aqui, e não com media="" no
+                    // <source>: esse atributo tem suporte irregular no Safari, e
+                    // uma fonte não resolvida faria o vídeo falhar exatamente
+                    // como um autoplay bloqueado. Roda logo após o elemento,
+                    // então o download da versão grande mal chega a começar.
+                    (function () {
+                        var v = document.getElementById('hero-video');
+                        if (!v) return;
+                        // sem src no HTML: assim o celular não chega a pedir a
+                        // versão grande para abortar logo em seguida
+                        v.src = window.matchMedia('(max-width: 1023px)').matches
+                            ? './midias/hero-intro-mobile.mp4'
+                            : './midias/hero-intro.mp4';
+                    })();
+                </script>
             </div>
 
             <!-- Conteúdo Textual -->
@@ -2147,11 +2162,24 @@
             // sentido cobrir a tela com a abertura.
             if (window.scrollY > 40) { encerrar(); return; }
 
+            // muted definido também por propriedade: o atributo sozinho nem
+            // sempre basta no iOS para liberar o autoplay
+            video.muted = true;
+            video.setAttribute('muted', '');
+
             // O atributo autoplay já tenta tocar; o play() explícito cobre os
-            // navegadores que engolem o autoplay, e o catch pega o bloqueio
-            // (modo de economia de bateria do iOS, por exemplo).
+            // navegadores que engolem o autoplay.
             const p = video.play();
-            if (p && p.catch) p.catch(encerrar);
+            if (p && p.catch) {
+                p.catch(() => {
+                    // Autoplay bloqueado (Modo de Baixo Consumo do iOS, economia
+                    // de dados, ou preferência do usuário). Encerrar na hora fazia
+                    // a abertura piscar e sumir. Em vez disso, o cartão de abertura
+                    // fica um instante com a logo e o poster, e então dá lugar ao
+                    // hero — parece intencional, não um defeito.
+                    setTimeout(encerrar, 1800);
+                });
+            }
 
             if (ENCERRAR_EM === null) {
                 video.addEventListener('ended', encerrar);
