@@ -35,12 +35,6 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600;700;800&display=swap"
         rel="stylesheet">
 
-    <!-- O vídeo da abertura é pedido aqui, ANTES dos scripts de terceiros.
-         Sem isso o navegador só chegava nele depois de resolver o Tailwind e o
-         lucide (que têm redirect), e em rede lenta isso passava de 15s. -->
-    <link rel="preload" as="video" type="video/mp4" href="./midias/hero-intro-mobile.mp4"
-        media="(max-width: 1023px)" fetchpriority="high">
-
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -505,100 +499,12 @@
             background-size: 28px 28px, 28px 28px, 56px 56px;
         }
 
-        /* A logo da abertura fica oculta por padrão em qualquer largura.
-           Só a media query do celular a exibe, e apenas durante a animação.
-           Antes o display:none vivia dentro da media query, então no desktop
-           a imagem caía no fluxo em tamanho natural e empurrava o vídeo. */
-        .hero-intro-logo {
-            display: none;
-        }
-
-        /* ---- Abertura do hero no mobile ----
-           O vídeo entra como animação de abertura cobrindo o hero, e sai de
-           cena quando o carro para. Depois dele o mobile não tem mais vídeo: o
-           hero fica no fundo escuro com a textura, como era antes.
-
-           O estado é a classe .hero-intro no <html>, posta por um script no
-           <head> (antes do primeiro paint, senão o hero normal apareceria por
-           um instante antes do vídeo cobrir) e removida no fim da animação.
-           Sem JS a classe nunca entra e o mobile mostra o hero normal. */
+        /* No celular não há vídeo no hero: ele é a faixa da direita só no
+           desktop. Abaixo de 1024px a página abre direto no hero, sobre o
+           fundo escuro com textura. */
         @media (max-width: 1023px) {
-
-            /* padrão do mobile: sem vídeo */
             .hero-video-wrap {
-                opacity: 0;
-                visibility: hidden;
-                z-index: 40;
-                transition: opacity 0.8s ease, visibility 0.8s ease;
-            }
-
-            .hero-intro .hero-video-wrap {
-                opacity: 1;
-                visibility: visible;
-                /* fundo sólido enquanto o vídeo não está pronto, para não
-                   aparecer o hero por trás nem quadros soltos */
-                background: #1C1C1E;
-            }
-
-            /* sem texto sobre o vídeo, o véu inferior não tem função na abertura */
-            .hero-intro .hero-fade-mobile {
-                opacity: 0;
-            }
-
-            /* O vídeo é 16:9 e a tela do celular é 9:19.5. Com object-cover
-               sobrava um close da grade do carro; com contain a composição
-               inteira aparece, centralizada sobre o fundo escuro. */
-            .hero-intro #hero-video {
-                object-fit: contain;
-            }
-
-            .hero-intro .hero-intro-logo {
-                display: block;
-                position: absolute;
-                left: 50%;
-                top: 18%;
-                transform: translateX(-50%);
-                width: 62%;
-                max-width: 250px;
-                z-index: 2;
-                filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.7));
-                animation: hero-logo-in 1.1s cubic-bezier(0.5, 0, 0, 1) both;
-            }
-
-            @keyframes hero-logo-in {
-                from {
-                    opacity: 0;
-                    transform: translate(-50%, 14px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translate(-50%, 0);
-                }
-            }
-
-            /* o botão flutuante do WhatsApp por cima da abertura polui a cena */
-            .hero-intro .shimmer.led-ring.fixed {
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity 0.5s ease;
-            }
-
-            .hero-content {
-                transition: opacity 1s ease, transform 1s cubic-bezier(0.5, 0, 0, 1);
-            }
-
-            /* o #hero garante especificidade sobre .reveal.active, que já teria
-               marcado o conteúdo como visível por estar na viewport */
-            .hero-intro #hero .hero-content {
-                opacity: 0;
-                transform: translateY(28px);
-                pointer-events: none;
-            }
-
-            .hero-intro .scroll-hint {
-                opacity: 0;
-                visibility: hidden;
+                display: none;
             }
         }
 
@@ -988,17 +894,7 @@
             }
         }
 
-        /* ---- Menu mobile ----
-           No mobile a navbar já nasce visível (sem esperar scroll), então ela é
-           escondida enquanto a abertura do hero está rodando. */
-        @media (max-width: 1023px) {
-            .hero-intro #main-header {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-        }
 
-        .menu-toggle span {
             display: block;
             width: 20px;
             height: 2px;
@@ -1118,18 +1014,6 @@
         }
     </style>
 
-    <!-- Marca a abertura do hero ANTES do primeiro paint. Se isso rodasse no
-         fim do body, o hero normal apareceria por um instante antes do vídeo
-         cobrir a tela. Sem JS a classe nunca entra e o mobile já nasce com o
-         hero normal, sem vídeo. -->
-    <script>
-        (function () {
-            if (window.matchMedia('(max-width: 1023px)').matches &&
-                !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.documentElement.classList.add('hero-intro');
-            }
-        })();
-    </script>
 </head>
 
 <body class="bg-brand-dark text-gray-300 font-sans antialiased selection:bg-brand-gold selection:text-white">
@@ -1257,11 +1141,6 @@
                     class="hero-fade-mobile block lg:hidden absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/80 to-transparent z-10 pointer-events-none">
                 </div>
 
-                <!-- Logo da abertura: ocupa o espaço acima da faixa do vídeo,
-                     que sobra porque o vídeo é 16:9 e a tela do celular é alta -->
-                <img src="./midias/1780447753_Logo-Rede-Prime-Auto-Center---Fundo-escuro.png" alt=""
-                    aria-hidden="true" class="hero-intro-logo">
-
                 <!-- O poster evita o botão de play do iOS quando o autoplay é
                      bloqueado (Modo de Baixo Consumo, por exemplo): em vez de um
                      controle quebrado, aparece um quadro real do carro. -->
@@ -1279,11 +1158,11 @@
                     (function () {
                         var v = document.getElementById('hero-video');
                         if (!v) return;
-                        // sem src no HTML: assim o celular não chega a pedir a
-                        // versão grande para abortar logo em seguida
-                        v.src = window.matchMedia('(max-width: 1023px)').matches
-                            ? './midias/hero-intro-mobile.mp4'
-                            : './midias/hero-intro.mp4';
+                        // o vídeo só existe no hero do desktop; no celular nem
+                        // chega a ser baixado
+                        if (window.matchMedia('(min-width: 1024px)').matches) {
+                            v.src = './midias/hero-intro.mp4';
+                        }
                     })();
                 </script>
             </div>
@@ -2132,111 +2011,6 @@
                 d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
         </svg>
     </a>
-
-    <!-- Fim da abertura do hero no mobile: o vídeo sai e entra o hero normal -->
-    <script>
-        (function () {
-            const html = document.documentElement;
-            const video = document.getElementById('hero-video');
-            // a classe é posta pelo script do <head>; se não está lá, não há
-            // abertura a encerrar (desktop, movimento reduzido ou sem JS)
-            if (!video || !html.classList.contains('hero-intro')) return;
-
-            // O arquivo já foi cortado em 5s (o carro assenta em ~4,6s), então
-            // o 'ended' cai no ponto certo. Para cortar mais cedo ainda, troque
-            // null por um número de segundos.
-            const ENCERRAR_EM = null;
-
-            let encerrado = false;
-            const encerrar = () => {
-                if (encerrado) return;
-                encerrado = true;
-                html.classList.remove('hero-intro');
-                // o vídeo já saiu de cena: para de consumir CPU e bateria
-                setTimeout(() => {
-                    try { video.pause(); } catch (e) { }
-                }, 900);
-            };
-
-            // Página aberta já rolada (recarregar preserva a posição): não faz
-            // sentido cobrir a tela com a abertura.
-            if (window.scrollY > 40) { encerrar(); return; }
-
-            // muted definido também por propriedade: o atributo sozinho nem
-            // sempre basta no iOS para liberar o autoplay
-            video.muted = true;
-            video.setAttribute('muted', '');
-
-            // O atributo autoplay já tenta tocar; o play() explícito cobre os
-            // navegadores que engolem o autoplay.
-            const p = video.play();
-            if (p && p.catch) {
-                p.catch(() => {
-                    // Autoplay bloqueado (Modo de Baixo Consumo do iOS, economia
-                    // de dados, ou preferência do usuário). Encerrar na hora fazia
-                    // a abertura piscar e sumir. Em vez disso, o cartão de abertura
-                    // fica um instante com a logo e o poster, e então dá lugar ao
-                    // hero — parece intencional, não um defeito.
-                    setTimeout(encerrar, 1800);
-                });
-            }
-
-            if (ENCERRAR_EM === null) {
-                video.addEventListener('ended', encerrar);
-            } else {
-                video.addEventListener('timeupdate', () => {
-                    if (video.currentTime >= ENCERRAR_EM) encerrar();
-                });
-            }
-
-            // --- redes de segurança: o hero nunca fica preso atrás do vídeo ---
-
-            // vídeo falhou ao carregar
-            video.addEventListener('error', encerrar);
-
-            // Rolagem DE VERDADE encerra a abertura. O atraso e o limiar de
-            // 40px são essenciais: no celular a barra de endereço recolhendo
-            // dispara 'scroll' sozinha logo após o load, sem o usuário tocar
-            // em nada — era isso que matava a abertura antes de começar.
-            setTimeout(() => {
-                if (encerrado) return;
-                const aoRolar = () => {
-                    if (window.scrollY > 40) {
-                        window.removeEventListener('scroll', aoRolar);
-                        encerrar();
-                    }
-                };
-                window.addEventListener('scroll', aoRolar, { passive: true });
-            }, 1200);
-
-            // Espera adaptativa. Um corte fixo aqui era o bug: na primeira
-            // visita em rede móvel o vídeo ainda não tinha começado aos 3s e a
-            // abertura era cancelada sozinha. Agora a paciência só acaba se a
-            // reprodução realmente não engatar, e assim que o primeiro quadro
-            // roda o vídeo tem o tempo dele até o fim.
-            const LIMITE_PARA_ENGATAR = 7000;
-            const inicio = Date.now();
-
-            const vigiar = setInterval(() => {
-                if (encerrado) { clearInterval(vigiar); return; }
-                if (video.currentTime > 0) { clearInterval(vigiar); return; }
-                if (Date.now() - inicio > LIMITE_PARA_ENGATAR) {
-                    clearInterval(vigiar);
-                    encerrar();
-                }
-            }, 250);
-
-            // teto absoluto, contado a partir do momento em que a reprodução
-            // começou de fato (não do carregamento da página)
-            const tetoAbsoluto = setInterval(() => {
-                if (encerrado) { clearInterval(tetoAbsoluto); return; }
-                if (video.currentTime > 0) {
-                    clearInterval(tetoAbsoluto);
-                    setTimeout(encerrar, 9000);
-                }
-            }, 250);
-        })();
-    </script>
 
     <!-- Cursor personalizado com rastro dourado -->
     <script>
