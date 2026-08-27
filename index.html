@@ -505,6 +505,14 @@
             background-size: 28px 28px, 28px 28px, 56px 56px;
         }
 
+        /* A logo da abertura fica oculta por padrão em qualquer largura.
+           Só a media query do celular a exibe, e apenas durante a animação.
+           Antes o display:none vivia dentro da media query, então no desktop
+           a imagem caía no fluxo em tamanho natural e empurrava o vídeo. */
+        .hero-intro-logo {
+            display: none;
+        }
+
         /* ---- Abertura do hero no mobile ----
            O vídeo entra como animação de abertura cobrindo o hero, e sai de
            cena quando o carro para. Depois dele o mobile não tem mais vídeo: o
@@ -542,10 +550,6 @@
                inteira aparece, centralizada sobre o fundo escuro. */
             .hero-intro #hero-video {
                 object-fit: contain;
-            }
-
-            .hero-intro-logo {
-                display: none;
             }
 
             .hero-intro .hero-intro-logo {
