@@ -35,6 +35,12 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;600;700;800&display=swap"
         rel="stylesheet">
 
+    <!-- O vídeo da abertura é pedido aqui, ANTES dos scripts de terceiros.
+         Sem isso o navegador só chegava nele depois de resolver o Tailwind e o
+         lucide (que têm redirect), e em rede lenta isso passava de 15s. -->
+    <link rel="preload" as="video" type="video/mp4" href="./midias/hero-intro-mobile.mp4"
+        media="(max-width: 1023px)" fetchpriority="high">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -1254,6 +1260,10 @@
 
                 <video id="hero-video" autoplay muted playsinline preload="auto"
                     class="w-full h-full object-cover object-center">
+                    <!-- No celular a faixa do vídeo tem ~390px: 640x360 basta e
+                         pesa 1/5, o que faz a abertura começar em vez de estourar
+                         o tempo de espera na primeira visita em rede móvel. -->
+                    <source src="./midias/hero-intro-mobile.mp4" type="video/mp4" media="(max-width: 1023px)">
                     <source src="./midias/hero-intro.mp4" type="video/mp4">
                     Seu navegador não suporta a reprodução de vídeos.
                 </video>
@@ -2167,14 +2177,32 @@
                 window.addEventListener('scroll', aoRolar, { passive: true });
             }, 1200);
 
-            // se em 3s a reprodução não avançou um quadro sequer, não vale
-            // segurar o visitante esperando
-            setTimeout(() => {
-                if (!video.currentTime) encerrar();
-            }, 3000);
+            // Espera adaptativa. Um corte fixo aqui era o bug: na primeira
+            // visita em rede móvel o vídeo ainda não tinha começado aos 3s e a
+            // abertura era cancelada sozinha. Agora a paciência só acaba se a
+            // reprodução realmente não engatar, e assim que o primeiro quadro
+            // roda o vídeo tem o tempo dele até o fim.
+            const LIMITE_PARA_ENGATAR = 7000;
+            const inicio = Date.now();
 
-            // teto absoluto (5s de vídeo + folga)
-            setTimeout(encerrar, 8000);
+            const vigiar = setInterval(() => {
+                if (encerrado) { clearInterval(vigiar); return; }
+                if (video.currentTime > 0) { clearInterval(vigiar); return; }
+                if (Date.now() - inicio > LIMITE_PARA_ENGATAR) {
+                    clearInterval(vigiar);
+                    encerrar();
+                }
+            }, 250);
+
+            // teto absoluto, contado a partir do momento em que a reprodução
+            // começou de fato (não do carregamento da página)
+            const tetoAbsoluto = setInterval(() => {
+                if (encerrado) { clearInterval(tetoAbsoluto); return; }
+                if (video.currentTime > 0) {
+                    clearInterval(tetoAbsoluto);
+                    setTimeout(encerrar, 9000);
+                }
+            }, 250);
         })();
     </script>
 
