@@ -894,7 +894,8 @@
             }
         }
 
-
+        /* ---- Menu mobile ---- */
+        .menu-toggle span {
             display: block;
             width: 20px;
             height: 2px;
@@ -921,9 +922,9 @@
         }
 
         .menu-mobile {
-            /* fundo praticamente sólido: o menu fica sobre o hero, e translucidez
-               com blur deixava o conteúdo de trás vazando e o texto lavado */
-            background-color: rgba(19, 19, 22, 0.985);
+            /* sólido: o menu abre sobre o hero, e qualquer translucidez fazia
+               o texto de trás fantasmar entre os itens */
+            background-color: #131316;
             opacity: 0;
             visibility: hidden;
             transform: translateY(-10px);
