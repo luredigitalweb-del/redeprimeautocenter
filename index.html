@@ -1320,11 +1320,14 @@
             </div>
 
             <!-- Demais Serviços -->
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- flex em vez de grid: com 5 cards em 3 colunas, a última linha
+                 tem 2 itens e o grid os encostaria à esquerda; o flex-wrap
+                 com justify-center deixa a sobra centralizada -->
+            <div class="flex flex-wrap justify-center gap-6">
 
                 <!-- Suspensão -->
                 <article id="suspensao" data-svc-card
-                    class="svc-card scroll-mt-28 reveal group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
+                    class="svc-card w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] scroll-mt-28 reveal group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
                     <div class="aspect-[4/3] overflow-hidden relative">
                         <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_49.png" alt="Suspensão"
                             loading="lazy" decoding="async"
@@ -1370,7 +1373,7 @@
 
                 <!-- Pneus e Geometria -->
                 <article id="pneus" data-svc-card
-                    class="svc-card scroll-mt-28 reveal delay-100 group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
+                    class="svc-card w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] scroll-mt-28 reveal delay-100 group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
                     <div class="aspect-[4/3] overflow-hidden relative">
                         <img src="./midias/1781544150_ChatGPT-Image-15_06_2026--14_22_19.png" alt="Pneus e Geometria"
                             loading="lazy" decoding="async"
@@ -1416,7 +1419,7 @@
 
                 <!-- Revisão Completa -->
                 <article id="revisao" data-svc-card
-                    class="svc-card scroll-mt-28 reveal delay-200 group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
+                    class="svc-card w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] scroll-mt-28 reveal delay-200 group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
                     <div class="aspect-[4/3] overflow-hidden relative">
                         <img src="./midias/1780684761_ChatGPT-Image-5_06_2026--15_37_55.png" alt="Revisão Completa"
                             loading="lazy" decoding="async"
@@ -1462,7 +1465,7 @@
 
                 <!-- Financiamento de Veículo -->
                 <article id="financiamento" data-svc-card
-                    class="svc-card scroll-mt-28 reveal delay-300 group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
+                    class="svc-card w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] scroll-mt-28 reveal delay-300 group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
                     <div class="aspect-[4/3] overflow-hidden relative">
                         <img src="./midias/1781543741_ChatGPT-Image-15_06_2026--14_14_38.png"
                             alt="Financiamento de Veículo" loading="lazy" decoding="async"
@@ -1499,6 +1502,55 @@
                                     target="_blank" rel="noopener"
                                     class="led-ring mt-auto inline-flex items-center justify-center gap-2 rounded-full border border-brand-gold/40 text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-bold px-4 py-3 uppercase tracking-wide text-xs transition-colors">
                                     Saiba mais
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Remap / Reprogramação -->
+                <article id="remap" data-svc-card
+                    class="svc-card w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] scroll-mt-28 reveal delay-100 group flex flex-col rounded-3xl overflow-hidden bg-brand-card border border-white/5 hover:border-brand-gold/30 hover:-translate-y-1 transition-all duration-300">
+                    <!-- TROCAR: assim que a foto do remap chegar, substituir esta
+                         div inteira pelo mesmo bloco de <img> dos outros cards -->
+                    <div class="aspect-[4/3] overflow-hidden relative bg-brand-dark flex items-center justify-center">
+                        <div
+                            class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(194,155,87,0.18)_0%,_transparent_65%)]">
+                        </div>
+                        <i data-lucide="gauge" class="w-14 h-14 text-brand-gold/50 relative z-10"></i>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-brand-card via-brand-card/20 to-transparent pointer-events-none">
+                        </div>
+                    </div>
+                    <div class="flex flex-col flex-grow p-6">
+                        <h3 class="font-heading text-xl font-bold text-white mb-4">
+                            <button type="button" class="svc-card-toggle" aria-expanded="true"
+                                aria-controls="painel-remap">
+                                <span>Remap</span>
+                                <i data-lucide="chevron-down" class="svc-card-chevron w-5 h-5"></i>
+                            </button>
+                        </h3>
+                        <div class="svc-card-panel" id="painel-remap">
+                            <div class="svc-card-panel-inner">
+                                <ul class="flex flex-col gap-2 text-gray-400 text-sm leading-snug mb-6">
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Reprogramação eletrônica da central
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Ajuste de potência, torque e resposta
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                                        Calibração conforme o motor do veículo
+                                    </li>
+                                </ul>
+                                <a href="https://wa.me/5534984304340?text=Ol%C3%A1!%20Quero%20agendar%3A%20Remap."
+                                    target="_blank" rel="noopener"
+                                    class="led-ring mt-auto inline-flex items-center justify-center gap-2 rounded-full border border-brand-gold/40 text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-bold px-4 py-3 uppercase tracking-wide text-xs transition-colors">
+                                    Agendar agora
                                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                 </a>
                             </div>
